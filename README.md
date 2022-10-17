@@ -1,5 +1,7 @@
 # Streamlit UI for OpenAI's Whisper transcription & analytics
 
+https://user-images.githubusercontent.com/6735526/196173369-27c5ceec-733a-4928-8acb-17cbc2e77a04.mp4
+
 This is a simple [Streamlit UI](https://streamlit.io/) for [OpenAI's Whisper speech-to-text model](https://openai.com/blog/whisper/).
 It let's you automatically select media by YouTube URL or select local files & then runs Whisper on them.
 Following that, it will display some basic analytics on the transcription.
