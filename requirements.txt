@@ -1,0 +1,7 @@
+# Verify your cuda version to make sure the right torch gets installed
+# You can pass --extra-index-url https://download.pytorch.org/whl/cu116 (or whatever your version is)
+git+https://github.com/openai/whisper.git
+pytube==12.1.0
+requests==2.28.1
+streamlit==1.13.0
+wordcloud==1.8.2.2

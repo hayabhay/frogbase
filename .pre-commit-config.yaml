@@ -1,0 +1,132 @@
+default_language_version:
+  python: python3.10
+default_stages: [commit]
+
+repos:
+  # Common pre-commit hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.3.0
+    hooks:
+      - id: check-added-large-files
+        args: ['--maxkb=20000']
+      - id: check-ast
+      - id: check-builtin-literals
+      - id: check-case-conflict
+      - id: check-docstring-first
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
+      - id: check-symlinks
+      - id: check-json
+      - id: check-toml
+      - id: check-yaml
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: pretty-format-json
+        args: ['--autofix']
+      - id: requirements-txt-fixer
+      - id: trailing-whitespace
+
+  - repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.3.1
+    hooks:
+      - id: forbid-crlf
+        name: CRLF end-lines checker
+        description: "Forbid files containing CRLF end-lines to be committed"
+        entry: forbid_crlf
+        language: python
+      - id: forbid-tabs
+        name: No-tabs checker
+        description: "Forbid files containing tabs to be committed"
+        entry: forbid_tabs
+        language: python
+
+  - repo: https://github.com/hadialqattan/pycln
+    rev: v2.1.1
+    hooks:
+      - id: pycln
+        name: pycln
+        description: "A formatter for finding and removing unused import statements."
+        entry: pycln
+        language: python
+        language_version: python3
+        types: [python]
+
+  - repo: local
+    hooks:
+      - id: jupyter-nb-clear-output
+        name: jupyter-nb-clear-output
+        description: "Clear jupyter notebook cell-outputs"
+        entry: jupyter nbconvert --ClearOutputPreprocessor.enabled=True --inplace
+        files: \.ipynb$
+        stages: [commit]
+        language: system
+
+  - repo: https://github.com/mwouts/jupytext
+    rev: v1.14.1
+    hooks:
+      - id: jupytext
+        name: jupytext
+        description: "Runs jupytext on all notebooks and paired files."
+        language: python
+        entry: jupytext --pre-commit-mode
+        require_serial: true
+        args: [--sync, --pipe, black]
+        additional_dependencies:
+          - black==22.1.0
+
+  - repo: https://github.com/psf/black
+    rev: 22.8.0
+    hooks:
+      - id: black
+        name: black
+        description: "Black: The uncompromising Python code formatter"
+        entry: black
+        language: python
+        minimum_pre_commit_version: 2.9.2
+        require_serial: true
+        types_or: [python, pyi]
+        args:
+          - "--line-length=120"
+
+  - repo: https://github.com/timothycrosley/isort
+    rev: 5.10.1
+    hooks:
+      - id: isort
+        name: isort
+        description: "Sorts import statements"
+        entry: isort
+        require_serial: true
+        language: python
+        language_version: python3
+        types_or: [ cython, pyi, python ]
+        minimum_pre_commit_version: '2.9.2'
+        files: "\\.(py)$"
+        args:
+          - "--filter-files"
+          - "--profile=black"
+          - "--multi-line=3"
+          - "--line-length=120"
+          - "--trailing-comma"
+
+  - repo: https://github.com/PyCQA/flake8
+    rev: 5.0.4
+    hooks:
+      - id: flake8
+        name: flake8
+        description: "`flake8` is a command-line utility for enforcing style consistency across Python projects."
+        entry: flake8
+        language: python
+        types: [python]
+        require_serial: true
+        exclude: ^scratch/
+        additional_dependencies: [
+            "flake8-bugbear",
+            "flake8-comprehensions",
+            "flake8-mutable",
+            "flake8-print",
+            "flake8-simplify",
+        ]
+        args:
+          - "--max-line-length=120"
+          - "--max-complexity=12"
+          - "--ignore=E501,W503,E203,F405,F403,F401,C901"
