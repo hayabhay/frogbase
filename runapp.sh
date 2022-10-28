@@ -1,0 +1,1 @@
+streamlit run 01_Transcribe.py
