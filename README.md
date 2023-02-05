@@ -5,8 +5,7 @@ It let's you download and transcribe media from YouTube videos, playlists, or lo
 You can then browse, filter, and search through your saved audio files.
 Feel free to raise an issue for bugs or feature requests or send a PR.
 
-https://user-images.githubusercontent.com/6735526/196173369-27c5ceec-733a-4928-8acb-17cbc2e77a04.mp4
-
+https://user-images.githubusercontent.com/6735526/216852681-53b6c3db-3e74-4c86-806f-6f6774a9003a.mp4
 
 ## Setup
 This was built & tested on Python 3.11 but should also work on Python 3.7+ as with the original [Whisper repo](https://github.com/openai/whisper)).
