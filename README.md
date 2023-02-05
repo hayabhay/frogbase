@@ -26,8 +26,9 @@ streamlit run app/01_🏠_Home.py
 
 This will open a new tab in your browser with the app. You can then select a YouTube URL or local file & click "Run Whisper" to run the model on the selected media.
 
+## Changelog
+All notable changes to this project alongside potential feature roadmap will be documented [in this file](CHANGELOG.md).
+
 ## License
 Whisper is licensed under [MIT](https://github.com/openai/whisper/blob/main/LICENSE) while Streamlit is licensed under [Apache 2.0](https://github.com/streamlit/streamlit/blob/develop/LICENSE).
 Everything else is licensed under [MIT](https://github.com/hayabhay/whisper-ui/blob/main/LICENSE).
-
-## [Changelog](CHANGELOG.md)
