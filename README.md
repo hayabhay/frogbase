@@ -15,6 +15,13 @@ You'll need to install `ffmpeg` on your system. Then, install the requirements w
 sudo apt install ffmpeg
 pip install -r requirements.txt
 ```
+
+If you're using conda, you can create a new environment with the following command:
+
+```
+conda env create -f environment.yml
+```
+
 ## Usage
 
 Once you're set up, you can run the app with:

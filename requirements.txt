@@ -7,7 +7,7 @@ openai-whisper==20230124 # https://github.com/openai/whisper
 # Backend
 # --------------------
 pytube==12.1.2 # https://github.com/pytube/pytube
-SQLAlchemy==2.0.0 # https://github.com/sqlalchemy/sqlalchemy
+SQLAlchemy==2.0.2 # https://github.com/sqlalchemy/sqlalchemy
 
 # Frontend
 # --------------------
