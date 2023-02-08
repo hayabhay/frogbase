@@ -8,13 +8,20 @@ Feel free to raise an issue for bugs or feature requests or send a PR.
 https://user-images.githubusercontent.com/6735526/216852681-53b6c3db-3e74-4c86-806f-6f6774a9003a.mp4
 
 ## Setup
-This was built & tested on Python 3.11 but should also work on Python 3.7+ as with the original [Whisper repo](https://github.com/openai/whisper)).
+This was built & tested on Python 3.11 but should also work on Python 3.9+ as with the original [Whisper repo](https://github.com/openai/whisper)).
 You'll need to install `ffmpeg` on your system. Then, install the requirements with `pip`.
 
 ```
 sudo apt install ffmpeg
 pip install -r requirements.txt
 ```
+
+If you're using conda, you can create a new environment with the following command:
+
+```
+conda env create -f environment.yml
+```
+
 ## Usage
 
 Once you're set up, you can run the app with:
