@@ -46,7 +46,7 @@ with st.sidebar.expander("➕ &nbsp; Add Media", expanded=False):
             youtube_url = st.text_input("Youtube video or playlist URL")
         elif source_type == "Upload":
             input_files = st.file_uploader(
-                "Add one or more files", type=["mp4", "avi", "mov", "mkv", "mp3", "wav"], accept_multiple_files=True
+                "Add one or more files", type=["mp4", "avi", "mov", "mkv", "mp3", "wav","m4a"], accept_multiple_files=True
             )
 
         add_media = st.form_submit_button(label="Add Media!")
