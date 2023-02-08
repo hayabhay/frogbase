@@ -53,6 +53,7 @@ with st.form("whisper_settings_form"):
         "Condition on previous text", value=st.session_state.whisper_params["condition_on_previous_text"]
     )
     verbose = st.checkbox("Verbose", value=st.session_state.whisper_params["verbose"])
+    task = st.checkbox("Translate", value=st.session_state.whisper_params["task"])
 
     save_settings = st.form_submit_button(label="💾 Save settings")
     success_container = st.empty()
@@ -68,6 +69,7 @@ with st.form("whisper_settings_form"):
             "compression_ratio_threshold": compression_ratio_threshold,
             "condition_on_previous_text": condition_on_previous_text,
             "verbose": verbose,
+            "task": task
         }
         # Commit to session & disk
         st.session_state.whisper_params = updated_whisper_settings
