@@ -107,23 +107,27 @@ class MediaManager:
             if source_type == "youtube":
                 yc = YouTube(source)
                 source_name = yc.title
+                # Remove any non-alphanumeric characters from the source name and replace them with a hyphen for the directory name
+                source_dirname = "".join([c if c.isalnum() else "-" for c in source_name])
                 # itag = 140 is the audio only version
                 # Check if directory already exists. If it does, append the current date and time to the directory name
-                save_dir = self.media_dir / f"{source_name}"
+                save_dir = self.media_dir / f"{source_dirname}"
                 save_filename = "audio.mp4"
                 if save_dir.exists():
-                    save_dir = self.media_dir / f"""{source_name} - {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}"""
+                    save_dir = self.media_dir / f"""{source_dirname}-{datetime.now().strftime("%Y-%m-%d %H-%M-%S")}"""
                 # Download the audio file
                 yc.streams.get_by_itag(140).download(save_dir, filename=save_filename)
             elif source_type == "upload":
                 # Parse the file name from the source
                 tokens = source.name.split(".")
                 source_name = ".".join(tokens[:-1])
+                # Remove any non-alphanumeric characters from the source name and replace them with a hyphen
+                source_dirname = "".join([c if c.isalnum() else "-" for c in source_name])
                 source_format = tokens[-1]
                 # Check if directory already exists. If it does, append the current date and time to the directory name
-                save_dir = self.media_dir / f"{source_name}"
+                save_dir = self.media_dir / f"{source_dirname}"
                 if save_dir.exists():
-                    save_dir = self.media_dir / f"""{source_name} - {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}"""
+                    save_dir = self.media_dir / f"""{source_dirname}-{datetime.now().strftime("%Y-%m-%d %H-%M-%S")}"""
                 # Create the directory
                 save_dir.mkdir(exist_ok=True)
                 save_filename = f"audio.{source_format}"
