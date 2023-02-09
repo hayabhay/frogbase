@@ -29,6 +29,7 @@ WHISPER_DEFAULT_SETTINGS = {
     "compression_ratio_threshold": 2.4,
     "condition_on_previous_text": True,
     "verbose": False,
+    "task": False
 }
 WHISPER_SETTINGS_FILE = DATA_DIR / ".whisper_settings.json"
 
