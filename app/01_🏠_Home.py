@@ -168,6 +168,13 @@ if st.session_state.list_mode:
                 if st.button("🗑️ Delete", key=f"delete-{media['id']}"):
                     media_manager.delete(media["id"])
                     st.experimental_rerun()
+                
+                filename=f'{Path(media["filepath"]).parent / "transcript"}.srt'
+                
+                with open(filename, "rb") as file:
+                    if st.download_button("📦 Download Subtitle", file, file_name="transcript.srt"):
+                        st.experimental_rerun()
+                
 
             with media_col:
                 # Render the media

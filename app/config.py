@@ -55,22 +55,22 @@ def get_whisper_settings():
 # Common page configurations
 # --------------------------
 ABOUT = """
-### Whisper UI
+### Whisper Subtitle
 
-This is a simple wrapper around Whisper to save, browse & search through transcripts.
+This is a simple wrapper around Whisper to save, browse & search through transcripts for movie subtitles.
 
-Please report any bugs or issues on [Github](https://github.com/hayabhay/whisper-ui/). Thanks!
+Please report any bugs or issues on [Github](https://github.com/ShuYuHuang/whisper-subtitle/). Thanks!
 """
 
 
 def get_page_config(page_title_prefix="", layout="wide"):
     return {
-        "page_title": f"{page_title_prefix}Whisper UI",
+        "page_title": f"{page_title_prefix}Whisper Subtitle",
         "page_icon": "🤖",
         "layout": layout,
         "menu_items": {
             "Get Help": "https://twitter.com/hayabhay",
-            "Report a bug": "https://github.com/hayabhay/whisper-ui/issues",
+            "Report a bug": "https://github.com/ShuYuHuang/whisper-subtitle/issues",
             "About": ABOUT,
         },
     }
