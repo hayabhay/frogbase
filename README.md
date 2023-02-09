@@ -48,6 +48,21 @@ Important ⚙️Settings F.Y.I :
 If you want to host it on a server with dynamic IP, you can install ```ngrok``` for forwarding your IP out. 
 So you can access it anywhere via a random url like: ```https://b9f1-458-19-17-41.jp.ngrok.io``` 
 
+1. Register for an account and get your own token from ngrok website: https://dashboard.ngrok.com/get-started/your-authtoken
+2. Install NGROK
+```
+wget https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz
+sudo tar xvzf ngrok-v3-stable-linux-amd64.tgz -C /usr/local/bin
+rm ngrok-v3-stable-linux-amd64.tgz
+```
+4. Put your own ngrok token from [ngrok website](https://dashboard.ngrok.com/get-started/your-authtoken) to  ```forward_port.sh```
+5. Expose your url to the public with ```bash forward_port.sh```
+6. Inspect the random url by ```python inspect_url.py ``` and use the url in your browser
+
+🚧 Long term hosting with a permanent url
+1. Prepare a permanent url and an API for forwarding
+2. Forwarded the random url to the given url by API each 10 min
+3. Do it again everytimg random url changes or the server died.
 
 🔥You can try our demo [here](https://whispersubtitle.aiacademy.tw)
 

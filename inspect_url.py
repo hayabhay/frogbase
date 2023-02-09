@@ -1,0 +1,1 @@
+import requests; print(requests.get("http://localhost:4040/api/tunnels").json()['tunnels'][0]['public_url'])
