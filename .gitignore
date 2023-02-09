@@ -222,3 +222,4 @@ tags
 .idea/
 
 .pytest_cache/
+*_my_*
