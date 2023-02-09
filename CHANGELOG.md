@@ -2,6 +2,9 @@
 ## Changelog
 All notable changes to this project will be documented in this file.
 
+### `v1.1.0` (2023-02-08)
+- Merged feature from @Eidenz to add translation in addition to transcription
+
 ### `v1.0.0a` (2023-02-07)
 Since there was some apetite for this, I've rewritten this to make it a tad cleaner with a few additional features based on issues raised and personal preferences.
 1. Ability to download entire YouTube playlists and upload multiple files at once
