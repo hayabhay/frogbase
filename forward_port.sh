@@ -1,2 +1,0 @@
-ngrok config add-authtoken 2K2R6X6NeJLfxeNPpd2UrQ6JLnL_C3Ab37DESTVJDwyyGNB6
-ngrok http 8501
