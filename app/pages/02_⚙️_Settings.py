@@ -52,6 +52,11 @@ with st.form("whisper_settings_form"):
     condition_on_previous_text = st.checkbox(
         "Condition on previous text", value=st.session_state.whisper_params["condition_on_previous_text"]
     )
+    language_options = ['en', 'zh', 'de', 'es', 'ru', 'ko', 'fr', 'ja', 'pt', 'tr', 'pl', 'ca', 'nl', 'ar', 'sv', 'it', 'id', 'hi', 'fi', 'vi', 'he', 'uk', 'el', 'ms', 'cs', 'ro', 'da', 'hu', 'ta', 'no', 'th', 'ur', 'hr', 'bg', 'lt', 'la', 'mi', 'ml', 'cy', 'sk', 'te', 'fa', 'lv', 'bn', 'sr', 'az', 'sl', 'kn', 'et', 'mk', 'br', 'eu', 'is', 'hy', 'ne', 'mn', 'bs', 'kk', 'sq', 'sw', 'gl', 'mr', 'pa', 'si', 'km', 'sn', 'yo', 'so', 'af', 'oc', 'ka', 'be', 'tg', 'sd', 'gu', 'am', 'yi', 'lo', 'uz', 'fo', 'ht', 'ps', 'tk', 'nn', 'mt', 'sa', 'lb', 'my', 'bo', 'tl', 'mg', 'as', 'tt', 'haw', 'ln', 'ha', 'ba', 'jw', 'su']
+    selected_language = language_options.index(st.session_state.whisper_params["language"])
+    language = st.selectbox(
+        "Language", options=language_options, index=selected_language
+    )
     verbose = st.checkbox("Verbose", value=st.session_state.whisper_params["verbose"])
 
     save_settings = st.form_submit_button(label="💾 Save settings")
@@ -68,6 +73,7 @@ with st.form("whisper_settings_form"):
             "compression_ratio_threshold": compression_ratio_threshold,
             "condition_on_previous_text": condition_on_previous_text,
             "verbose": verbose,
+            "language": language
         }
         # Commit to session & disk
         st.session_state.whisper_params = updated_whisper_settings
