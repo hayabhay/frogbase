@@ -1,6 +1,5 @@
 import streamlit as st
 from config import WHISPER_SETTINGS_FILE, get_page_config, get_whisper_settings, save_whisper_settings
-from core import MediaManager
 
 st.set_page_config(**get_page_config(layout="centered"))
 
@@ -53,7 +52,10 @@ with st.form("whisper_settings_form"):
         "Condition on previous text", value=st.session_state.whisper_params["condition_on_previous_text"]
     )
     verbose = st.checkbox("Verbose", value=st.session_state.whisper_params["verbose"])
-    task = st.checkbox("Translate", value=st.session_state.whisper_params["task"])
+    task_options = ["transcribe", "translate"]
+    task = st.selectbox(
+        "Default mode", options=task_options, index=task_options.index(st.session_state.whisper_params["task"])
+    )
 
     save_settings = st.form_submit_button(label="💾 Save settings")
     success_container = st.empty()
@@ -69,7 +71,7 @@ with st.form("whisper_settings_form"):
             "compression_ratio_threshold": compression_ratio_threshold,
             "condition_on_previous_text": condition_on_previous_text,
             "verbose": verbose,
-            "task": task
+            "task": task,
         }
         # Commit to session & disk
         st.session_state.whisper_params = updated_whisper_settings

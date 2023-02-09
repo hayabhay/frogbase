@@ -49,11 +49,6 @@ class MediaManager:
         else:
             whisper_args["temperature"] = [whisper_args["temperature"]]
 
-        if whisper_args["task"]:
-            whisper_args["task"] = "translate"
-        else:
-            whisper_args["task"] = "transcribe"
-
         del whisper_args["temperature_increment_on_fallback"]
 
         transcript = transcriber.transcribe(

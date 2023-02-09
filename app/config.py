@@ -14,7 +14,7 @@ DATA_DIR.mkdir(exist_ok=True)
 MEDIA_DIR = DATA_DIR / "media"
 MEDIA_DIR.mkdir(exist_ok=True)
 
-DEBUG = True
+DEBUG = False
 
 
 # Whisper config
@@ -29,7 +29,7 @@ WHISPER_DEFAULT_SETTINGS = {
     "compression_ratio_threshold": 2.4,
     "condition_on_previous_text": True,
     "verbose": False,
-    "task": False
+    "task": "transcribe",
 }
 WHISPER_SETTINGS_FILE = DATA_DIR / ".whisper_settings.json"
 
@@ -44,6 +44,10 @@ def get_whisper_settings():
     if WHISPER_SETTINGS_FILE.exists():
         with open(WHISPER_SETTINGS_FILE, "r") as f:
             whisper_settings = json.load(f)
+        # Check if all keys are present [for backward compatibility]
+        for key in WHISPER_DEFAULT_SETTINGS.keys():
+            if key not in whisper_settings:
+                whisper_settings[key] = WHISPER_DEFAULT_SETTINGS[key]
     else:
         whisper_settings = WHISPER_DEFAULT_SETTINGS
         save_whisper_settings(WHISPER_DEFAULT_SETTINGS)

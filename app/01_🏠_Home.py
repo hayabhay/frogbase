@@ -48,7 +48,10 @@ with st.sidebar.expander("➕ &nbsp; Add Media", expanded=False):
             input_files = st.file_uploader(
                 "Add one or more files", type=["mp4", "avi", "mov", "mkv", "mp3", "wav"], accept_multiple_files=True
             )
-
+        task_options = ["transcribe", "translate"]
+        task = st.selectbox(
+            "Task", options=task_options, index=task_options.index(st.session_state.whisper_params["task"])
+        )
         add_media = st.form_submit_button(label="Add Media!")
 
     if add_media:
@@ -66,6 +69,9 @@ with st.sidebar.expander("➕ &nbsp; Add Media", expanded=False):
 
         # Lowercase the source type
         source_type = source_type.lower()
+
+        # Update session state whisper params
+        st.session_state.whisper_params["task"] = task
 
         if source:
             media_manager.add(
