@@ -63,6 +63,7 @@ with st.sidebar.expander("➕ &nbsp; Add Media", expanded=False):
                 source = input_files
             else:
                 st.error("Please upload files")
+                        
 
         # Lowercase the source type
         source_type = source_type.lower()
@@ -236,7 +237,7 @@ else:
     media = media_manager.get_detail(media_id=st.session_state.selected_media)
 
     # Render mini nav
-    back_col, del_col = st.sidebar.columns(2)
+    back_col, del_col, download_col = st.sidebar.columns(3)
     with back_col:
         # Add a button to show the list view
         if st.button("◀️ &nbsp; Back to list", key="back-to-list-main"):
@@ -247,7 +248,14 @@ else:
             media_manager.delete(media["id"])
             st.session_state.list_mode = True
             st.experimental_rerun()
-
+    
+    with download_col:
+        filename=f'{Path(media["filepath"]).parent / "transcript"}.srt'
+                
+        with open(filename, "rb") as file:
+            if st.download_button("📦 Download Subtitle", file, file_name="transcript.srt"):
+                st.experimental_rerun()
+                
     st.sidebar.write(f"""### {media["source_name"]}""")
 
     # Render the media. Use both audio & video for youtube

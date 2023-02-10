@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session
 
 # Whisper transcription functions
 # ----------------
-@lru_cache(maxsize=1)
+@lru_cache(maxsize=3)
 def get_whisper_model(whisper_model: str):
     """Get a whisper model from the cache or download it if it doesn't exist"""
     model = whisper.load_model(whisper_model)
@@ -40,7 +40,7 @@ class MediaManager:
         # Get whisper model
         # NOTE: If mulitple models are selected, this may keep all of them in memory depending on the cache size
         transcriber = get_whisper_model(whisper_model)
-
+        
         # Set configs & transcribe
         if whisper_args["temperature_increment_on_fallback"] is not None:
             whisper_args["temperature"] = tuple(

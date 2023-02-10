@@ -55,7 +55,7 @@ def get_whisper_settings():
 # Common page configurations
 # --------------------------
 ABOUT = """
-### Whisper Subtitle
+### 💬 Whisper Subtitle
 
 This is a simple wrapper around Whisper to save, browse & search through transcripts for movie subtitles.
 
@@ -63,13 +63,13 @@ Please report any bugs or issues on [Github](https://github.com/ShuYuHuang/whisp
 """
 
 
-def get_page_config(page_title_prefix="", layout="wide"):
+def get_page_config(page_title_prefix="💬", layout="wide"):
     return {
         "page_title": f"{page_title_prefix}Whisper Subtitle",
-        "page_icon": "🤖",
+        "page_icon": ":movie_camera:",
         "layout": layout,
         "menu_items": {
-            "Get Help": "https://twitter.com/hayabhay",
+            "Get Help": "https://github.com/ShuYuHuang",
             "Report a bug": "https://github.com/ShuYuHuang/whisper-subtitle/issues",
             "About": ABOUT,
         },
