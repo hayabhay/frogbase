@@ -1,5 +1,6 @@
 # Custom ignore
 local/
+data/
 
 ### Python template
 # Byte-compiled / optimized / DLL files
