@@ -22,6 +22,14 @@ If you're using conda, you can create a new environment with the following comma
 conda env create -f environment.yml
 ```
 
+For windows conda, installation:
+
+```
+conda install -c conda-forge ffmpeg
+pip install -r requirements.txt
+conda env create -f win-environment.yml
+```
+
 Note: If you're using a CPU-only machine, your runtime can be sped-up by using quantization implemented by [@MicellaneousStuff](https://github.com/MiscellaneousStuff) by swapping out `pip install openai-whisper` from `requirements.txt` and replacing it with their fork `pip install git+https://github.com/MiscellaneousStuff/whisper.git` (See related discussion here - https://github.com/hayabhay/whisper-ui/issues/20) 
 
 ## Usage
@@ -29,6 +37,13 @@ Note: If you're using a CPU-only machine, your runtime can be sped-up by using q
 Once you're set up, you can run the app with:
 
 ```
+streamlit run app/01_🏠_Home.py
+```
+
+For windows:
+
+```
+conda activate whisper
 streamlit run app/01_🏠_Home.py
 ```
 
