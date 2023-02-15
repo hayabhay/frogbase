@@ -30,7 +30,7 @@ WHISPER_DEFAULT_SETTINGS = {
     "condition_on_previous_text": True,
     "verbose": False,
     "language": 'zh',
-    "fp16": False,
+    "fp16": True,
     "without_timestamps" : False
 }
 WHISPER_SETTINGS_FILE = DATA_DIR / ".whisper_settings.json"

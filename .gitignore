@@ -223,3 +223,6 @@ tags
 
 .pytest_cache/
 *_my_*
+
+experiments
+*/*_exp*
