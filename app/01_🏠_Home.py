@@ -277,21 +277,18 @@ else:
         st.markdown(media["transcript"])
         st.write("---")
 
-    with st.expander("📝 &nbsp; Segments", expanded=True):
-        st.info(
-            """Clicking on a segment will move start position to the segment (only audio player will continue playing while video will pause)"""
-        )
-        # Iterate over all segments in the transcript
-        for segment in media["segments"]:
-            # Create 2 columns
-            meta_col, text_col = st.columns([1, 6], gap="small")
+    st.info(
+        """Clicking on a segment will move start position to the segment (only audio player will continue playing while video will pause)"""
+    )
+    # Iterate over all segments in the transcript
+    for segment in media["segments"]:
+        # Create 2 columns
+        meta_col, text_col = st.columns([1, 6], gap="small")
 
-            with meta_col:
-                if st.button(
-                    f"▶️ &nbsp; {int(segment['start'])}: {int(segment['end'])}", key=f"play-{segment['number']}"
-                ):
-                    st.session_state.selected_media_offset = int(segment["start"])
-                    st.experimental_rerun()
+        with meta_col:
+            if st.button(f"▶️ &nbsp; {int(segment['start'])}: {int(segment['end'])}", key=f"play-{segment['number']}"):
+                st.session_state.selected_media_offset = int(segment["start"])
+                st.experimental_rerun()
 
-            with text_col:
-                st.write(f'##### `{segment["text"]}`')
+        with text_col:
+            st.write(f'##### `{segment["text"]}`')
