@@ -258,6 +258,13 @@ else:
 
     st.write(f'## {media["source_name"]}')
 
+    with st.expander("🔽 &nbsp; Downloads"):
+        fpath = str(Path(media["filepath"]).parent)
+        fname = str(Path(media["filepath"]).parent.name)
+        for ext in (".srt",".vtt",".json",".txt",".tsv"):
+            with open(fpath + '/transcript' + ext) as f:
+                st.download_button('Download ' + ext, f, file_name=fname+ext);
+
     with st.expander("📝 &nbsp; Metadata"):
         # Add a meta caption
         source_type = "YouTube" if media["source_type"] == "youtube" else "uploaded"
