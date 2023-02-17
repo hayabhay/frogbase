@@ -34,6 +34,16 @@ streamlit run app/01_🏠_Home.py
 
 This will open a new tab in your browser with the app. You can then select a YouTube URL or local file & click "Run Whisper" to run the model on the selected media.
 
+## Docker
+
+Alternatively, you can run the app containerized with Docker via the included docker-compose.yml. Simply run:
+
+```
+docker compose up
+```
+
+Then open up a new tab and navigate to [http://localhost:8501/](http://localhost:8501/)
+
 ## Changelog
 All notable changes to this project alongside potential feature roadmap will be documented [in this file](CHANGELOG.md).
 
