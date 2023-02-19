@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  whisper-ui:
+    image: hayabhay/whisper-ui
+    build: .
+    container_name: whisper-ui
+    volumes:
+        # Mount the local data directory inside the container
+        # NOTE: This breaks any existing data in the container since the paths are absolute
+        # TODO: Fix this to relative paths from some user-defined directory
+      - ./data:/data
+    restart: unless-stopped
+    ports:
+      - 8501:8501
