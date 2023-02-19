@@ -8,6 +8,7 @@ Feel free to raise an issue for bugs or feature requests or send a PR.
 https://user-images.githubusercontent.com/6735526/216852681-53b6c3db-3e74-4c86-806f-6f6774a9003a.mp4
 
 ## Setup
+
 This was built & tested on Python 3.11 but should also work on Python 3.9+ as with the original [Whisper repo](https://github.com/openai/whisper)).
 You'll need to install `ffmpeg` on your system. Then, install the requirements with `pip`.
 
@@ -44,9 +45,13 @@ docker compose up
 
 Then open up a new tab and navigate to [http://localhost:8501/](http://localhost:8501/)
 
+NOTE: For existing users, this will break the database since absolute paths of files are saved. A future fix will be added to fix this.
+
 ## Changelog
-All notable changes to this project alongside potential feature roadmap will be documented [in this file](CHANGELOG.md).
+
+All notable changes to this project alongside potential feature roadmap will be documented [in this file](CHANGELOG.md)
 
 ## License
+
 Whisper is licensed under [MIT](https://github.com/openai/whisper/blob/main/LICENSE) while Streamlit is licensed under [Apache 2.0](https://github.com/streamlit/streamlit/blob/develop/LICENSE).
 Everything else is licensed under [MIT](https://github.com/hayabhay/whisper-ui/blob/main/LICENSE).
