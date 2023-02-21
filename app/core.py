@@ -1,5 +1,6 @@
 """Thin wrapper class to manage Media objects."""
 import shutil
+import time
 from datetime import datetime, timedelta
 from functools import lru_cache
 from pathlib import Path
@@ -7,19 +8,53 @@ from typing import Any, List, Union
 
 import ffmpeg
 import numpy as np
+
+import torch
 import whisper
 from config import MEDIA_DIR
 from db import ENGINE, Media, Segment, Transcript
 from pytube import Playlist, YouTube
 from sqlalchemy.orm import Session
 
+N_GPUS = torch.cuda.device_count()
+
+
+def ratio(x):
+    return (x[0])/x[1]
+def check_gpu_ok(i):
+    return ratio(torch.cuda.mem_get_info(i)) > 0.5
+def return_gpu():
+    for i in range(N_GPUS):
+        if check_gpu_ok(i):
+            return f'cuda:{i}'
+            break
+        elif i == N_GPUS-1:
+            print('!!!No space left!!!')
+            return f'cpu'
+
+N_MODELS = 10
+model_ok = []
+for i in range(N_MODELS):
+    # initial state flag
+    model_ok.append(True)
+
+
 
 # Whisper transcription functions
 # ----------------
-@lru_cache(maxsize=3)
-def get_whisper_model(whisper_model: str):
+@lru_cache(maxsize=10)
+def get_whisper_model(whisper_model: str, model_id: int):
     """Get a whisper model from the cache or download it if it doesn't exist"""
-    model = whisper.load_model(whisper_model)
+    model_ok[model_id] = False
+    dev1 = return_gpu()
+    model = whisper.load_model(whisper_model, device="cpu")
+    
+    model.encoder.to(dev1)
+    dev2 = return_gpu()
+    model.decoder.to(dev2)
+
+    model.decoder.register_forward_pre_hook(lambda _, inputs: tuple([inputs[0].to(dev2), inputs[1].to(dev2)] + list(inputs[2:])))
+    model.decoder.register_forward_hook(lambda _, inputs, outputs: outputs.to(dev1))
     return model
 
 
@@ -39,8 +74,16 @@ class MediaManager:
 
         # Get whisper model
         # NOTE: If mulitple models are selected, this may keep all of them in memory depending on the cache size
-        transcriber = get_whisper_model(whisper_model)
-        
+        ok_flag = False
+        while not ok_flag:
+            for model_id in range(N_MODELS):
+                if model_ok[model_id]:
+                    transcriber = get_whisper_model(whisper_model, model_id)
+                    ok_flag = True
+                    break
+            time.sleep(5)
+            print('All models are busy')
+
         # Set configs & transcribe
         if whisper_args["temperature_increment_on_fallback"] is not None:
             whisper_args["temperature"] = tuple(
@@ -50,11 +93,18 @@ class MediaManager:
             whisper_args["temperature"] = [whisper_args["temperature"]]
 
         del whisper_args["temperature_increment_on_fallback"]
-
-        transcript = transcriber.transcribe(
-            audio_path,
-            **whisper_args,
-        )
+        
+        ok_flag = False
+        while not ok_flag:
+            try:
+                transcript = transcriber.transcribe(
+                    audio_path,
+                    **whisper_args,
+                )
+                model_ok[model_id] = True
+                ok_flag = True
+            except:
+                ok_flag = False
 
         return transcript
 

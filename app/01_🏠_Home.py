@@ -173,7 +173,7 @@ if st.session_state.list_mode:
                 filename=f'{Path(media["filepath"]).parent / "transcript"}.srt'
                 
                 with open(filename, "rb") as file:
-                    if st.download_button("📦 Download Subtitle", file, file_name="transcript.srt"):
+                    if st.download_button("📦 Download Subtitle", file, file_name=media["source_name"]+".srt"):
                         st.experimental_rerun()
                 
 
@@ -253,7 +253,7 @@ else:
         filename=f'{Path(media["filepath"]).parent / "transcript"}.srt'
                 
         with open(filename, "rb") as file:
-            if st.download_button("📦 Download Subtitle", file, file_name="transcript.srt"):
+            if st.download_button("📦 Download Subtitle", file, file_name=media["source_name"]+".srt"):
                 st.experimental_rerun()
                 
     st.sidebar.write(f"""### {media["source_name"]}""")
