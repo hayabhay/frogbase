@@ -9,7 +9,7 @@ Feel free to raise an issue for bugs or feature requests or send a PR.
 它允許您從YouTube視頻、播放列表或本地文件下載和轉錄媒體 (一個檔案限制為200MB)。
 然後，您可以瀏覽、過濾和搜索您保存的音頻文件。隨時歡迎提出錯誤或功能要求，或發送 PR。
 
-https://user-images.githubusercontent.com/6735526/216852681-53b6c3db-3e74-4c86-806f-6f6774a9003a.mp4
+[![Whisper Subtitle](https://i.ytimg.com/vi/JVCONXj6lgo/maxresdefault.jpg)](https://youtu.be/JVCONXj6lgo "Whisper Subtitle")
 
 ## Setup
 This was built & tested on Python 3.11 but should also work on Python 3.8+ as with the original [Whisper repo](https://github.com/openai/whisper)).
@@ -59,10 +59,8 @@ rm ngrok-v3-stable-linux-amd64.tgz
 5. Expose your url to the public with ```bash forward_port.sh```
 6. Inspect the random url by ```python inspect_url.py ``` and use the url in your browser
 
-🚧 Long term hosting with a permanent url
-1. Prepare a permanent url and an API for forwarding
-2. Forwarded the random url to the given url by API each 10 min
-3. Do it again everytimg random url changes or the server died.
+🚧 Under Construction:
+1. Import redis for task queue
 
 🔥You can try our demo [here](https://whispersubtitle.aiacademy.tw)
 
