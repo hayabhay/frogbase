@@ -9,7 +9,9 @@ Feel free to raise an issue for bugs or feature requests or send a PR.
 它允許您從YouTube視頻、播放列表或本地文件下載和轉錄媒體 (一個檔案限制為200MB)。
 然後，您可以瀏覽、過濾和搜索您保存的音頻文件。隨時歡迎提出錯誤或功能要求，或發送 PR。
 
-[![Whisper Subtitle](https://i.ytimg.com/vi/JVCONXj6lgo/maxresdefault.jpg)](https://youtu.be/JVCONXj6lgo "Whisper Subtitle")
+## Watch demo @ Youtube:
+[<img src='https://user-images.githubusercontent.com/15317938/220814880-7e8abb6e-36d9-41ac-8821-533a24bf7de3.png' width=320>](https://youtu.be/nJi1swi8y4I "Whisper Subtitle")
+
 
 ## Setup
 This was built & tested on Python 3.11 but should also work on Python 3.8+ as with the original [Whisper repo](https://github.com/openai/whisper)).
