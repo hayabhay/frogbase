@@ -36,11 +36,11 @@ def get_formatted_date(date_str: str) -> str:
     return f"{time}, {date}"
 
 
-def paginate(dataframe, page_size, page_num):
+def paginate(data, page_size, page_num):
     if page_size is None:
-        return None
-    offset = page_size*(page_num-1)
-    return dataframe[offset:offset + page_size]
+        return []
+    offset = page_size * (page_num-1)
+    return data[offset:offset + page_size]
 
 
 # Add view
