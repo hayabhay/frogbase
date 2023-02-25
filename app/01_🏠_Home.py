@@ -36,6 +36,13 @@ def get_formatted_date(date_str: str) -> str:
     return f"{time}, {date}"
 
 
+def paginate(dataframe, page_size, page_num):
+    if page_size is None:
+        return None
+    offset = page_size*(page_num-1)
+    return dataframe[offset:offset + page_size]
+
+
 # Add view
 # ---------
 with st.sidebar.expander("➕ &nbsp; Add Media", expanded=False):
@@ -280,8 +287,13 @@ else:
     st.info(
         """Clicking on a segment will move start position to the segment (only audio player will continue playing while video will pause)"""
     )
+    
     # Iterate over all segments in the transcript
-    for segment in media["segments"]:
+    per_page = 20
+    pages_total = math.ceil(len(media["segments"]) / per_page)
+    page_number = st.selectbox(f"Pages ({pages_total})", range(1, pages_total + 1))
+    
+    for segment in paginate(media["segments"], per_page, page_number):
         # Create 2 columns
         meta_col, text_col = st.columns([1, 6], gap="small")
 
