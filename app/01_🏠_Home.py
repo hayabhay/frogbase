@@ -5,6 +5,9 @@ import streamlit as st
 from config import get_page_config, get_whisper_settings, save_whisper_settings
 from core import MediaManager
 
+from streamlit.runtime.uploaded_file_manager import UploadedFile, UploadedFileRec
+from audiorecorder import audiorecorder
+
 st.set_page_config(**get_page_config())
 
 
@@ -40,7 +43,7 @@ def get_formatted_date(date_str: str) -> str:
 # ---------
 with st.sidebar.expander("➕ &nbsp; Add Media", expanded=False):
     # # Render media type selection on the sidebar & the form
-    source_type = st.radio("Media Source", ["YouTube", "Upload"], label_visibility="collapsed")
+    source_type = st.radio("Media Source", ["YouTube", "Upload", "Mic"], label_visibility="collapsed")
     with st.form("input_form"):
         if source_type == "YouTube":
             youtube_url = st.text_input("Youtube video or playlist URL")
@@ -48,6 +51,29 @@ with st.sidebar.expander("➕ &nbsp; Add Media", expanded=False):
             input_files = st.file_uploader(
                 "Add one or more files", type=["mp4", "avi", "mov", "mkv", "mp3", "wav"], accept_multiple_files=True
             )
+        elif source_type == "Mic":
+            audio = audiorecorder("Click to record", "Recording...")
+            if len(audio) > 0:
+                # To play audio in frontend:
+                #st.audio(audio.tobytes())
+
+                # To save audio to a file:
+                #wav_file = open("audio.mp3", "wb")
+                #wav_file.write(audio.tobytes())
+                #wav_file.close()
+
+                # emulate "uploaded file"
+                now = datetime.now()
+                d = f'{now:%Y%m%d%H%M%S}'
+
+                filerec = UploadedFileRec(0,
+                                          f"mic_input_{d}.mp3",
+                                          "mp3",
+                                          audio.tobytes())
+                input_files = UploadedFile(filerec)
+            else:
+                input_files = None
+
         task_options = ["transcribe", "translate"]
         task = st.selectbox(
             "Task", options=task_options, index=task_options.index(st.session_state.whisper_params["task"])
@@ -66,6 +92,11 @@ with st.sidebar.expander("➕ &nbsp; Add Media", expanded=False):
                 source = input_files
             else:
                 st.error("Please upload files")
+        elif source_type == "Mic":
+            if input_files:
+                source = input_files
+            else:
+                st.error("Please input your voice via mic") 
 
         # Lowercase the source type
         source_type = source_type.lower()
@@ -156,7 +187,7 @@ if st.session_state.list_mode:
                 # Add a meta caption
                 st.write(f"#### {media['source_name']}")
 
-                source_type = "YouTube" if media["source_type"] == "youtube" else "upload"
+                source_type = "YouTube" if media["source_type"] == "youtube" else media["source_type"]
                 st.markdown(
                     f"""
                     <i>Source</i>: {source_type}<br/>
@@ -179,7 +210,7 @@ if st.session_state.list_mode:
                 # Render the media
                 if media["source_type"] == "youtube":
                     st.video(media["source_link"])
-                elif media["source_type"] == "upload":
+                elif media["source_type"] in ["upload", "mic"]:
                     st.audio(media["filepath"])
 
             st.write("---")
@@ -207,6 +238,12 @@ if st.session_state.list_mode:
 
                     # Add a meta caption
                     source_type = "YouTube" if media["source_type"] == "youtube" else "uploaded"
+                    if media["source_type"] == "youtube":
+                        source_type = "YouTube"
+                    elif media["source_type"] == "upload":
+                        source_type = "uploaded"
+                    else:
+                        source_tpye = media["source_type"]
                     st.markdown(
                         f"""
                         <i>Source</i>: <b>{media['source_name']}</b> ({source_type})<br/>
@@ -253,7 +290,7 @@ else:
     if media["source_type"] == "youtube":
         st.sidebar.audio(media["filepath"], start_time=st.session_state.selected_media_offset)
         st.sidebar.video(media["source_link"])
-    elif media["source_type"] == "upload":
+    elif media["source_type"] in ["upload", "mic"]:
         st.sidebar.audio(media["filepath"], start_time=st.session_state.selected_media_offset)
 
     st.write(f'## {media["source_name"]}')
@@ -261,6 +298,12 @@ else:
     with st.expander("📝 &nbsp; Metadata"):
         # Add a meta caption
         source_type = "YouTube" if media["source_type"] == "youtube" else "uploaded"
+        if media["source_type"] == "youtube":
+            source_type = "YouTube"
+        elif media["source_type"] == "upload":
+            source_type = "uploaded"
+        else:
+            source_tpye = media["source_type"]
         st.markdown(
             f"""
             <i>Source</i>: <b>{media['source_name']}</b> ({source_type})<br/>

@@ -12,3 +12,7 @@ SQLAlchemy==2.0.3 # https://github.com/sqlalchemy/sqlalchemy
 # Frontend
 # --------------------
 streamlit==1.18.1 # https://github.com/streamlit/streamlit
+
+# Audio Recorder on Frontend
+# --------------------
+streamlit-audiorecorder==0.0.2 # https://github.com/theevann/streamlit-audiorecorder
