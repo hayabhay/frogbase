@@ -1,7 +1,0 @@
-[browser]
-gatherUsageStats = false
-
-[server]
-sslCertFile = './ssl/server.crt'
-sslKeyFile = './ssl/server.key'
-

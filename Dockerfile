@@ -29,4 +29,8 @@ EXPOSE 8501
 VOLUME /data
 
 # Run the app
-CMD streamlit run /app/01_🏠_Home.py
+#CMD streamlit run /app/01_🏠_Home.py
+
+# Run the app on https
+COPY ssl /app/ssl
+CMD streamlit run /app/01_🏠_Home.py --server.sslCertFile '/app/ssl/server.crt'  --server.sslKeyFile '/app/ssl/server.key'
