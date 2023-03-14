@@ -25,7 +25,7 @@ conda env create -f environment.yml
 
 Note: If you're using a CPU-only machine, your runtime can be sped-up by using quantization implemented by [@MicellaneousStuff](https://github.com/MiscellaneousStuff) by swapping out `pip install openai-whisper` from `requirements.txt` and replacing it with their fork `pip install git+https://github.com/MiscellaneousStuff/whisper.git` (See related discussion here - https://github.com/hayabhay/whisper-ui/issues/20)
 
-Note: If you want to use "mic input", due to browser media access issue, you should We should use SSL termination configuration in a reverse proxy or load balancer, or you can use streamlit [HTTPS support](https://docs.streamlit.io/library/advanced-features/https-support). streamlit 1.20.0 or later supports HTTPS. "mic input" data will be treated as "uploaded".
+Note: If you want to use "mic input", due to browser media access issue, you should use SSL termination configuration in a reverse proxy or load balancer, or you can use streamlit [HTTPS support](https://docs.streamlit.io/library/advanced-features/https-support). streamlit 1.20.0 or later supports HTTPS. "mic input" data will be treated as "uploaded".
 
 ## Usage
 
