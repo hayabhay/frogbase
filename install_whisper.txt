@@ -1,9 +1,10 @@
 # Install pytorch if you don't have it
 # sudo conda install pytorch
 pip install -r requirements.txt
-pip install git+https://github.com/openai/whisper.git
+# install whisper for newer version
+# pip install git+https://github.com/openai/whisper.git
 
 # Install ngrok
-wget https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz
-sudo tar xvzf ngrok-v3-stable-linux-amd64.tgz -C /usr/local/bin
-rm -f ngrok-v3-stable-linux-amd64.tgz
+#wget https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz
+#sudo tar xvzf ngrok-v3-stable-linux-amd64.tgz -C /usr/local/bin
+#rm -f ngrok-v3-stable-linux-amd64.tgz

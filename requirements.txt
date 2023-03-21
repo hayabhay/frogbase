@@ -5,9 +5,9 @@
 # You can pass --extra-index-url https://download.pytorch.org/whl/cu116 (or whatever your version is)
 transformers
 openai-whisper==20230124 # https://github.com/openai/whisper
+git+https://github.com/duvu/pytube.git
 # Backend
 # --------------------
-pytube==12.1.2 # https://github.com/pytube/pytube
 SQLAlchemy==2.0.0 # https://github.com/sqlalchemy/sqlalchemy
 
 # Frontend

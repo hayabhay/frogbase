@@ -81,8 +81,9 @@ class MediaManager:
                     transcriber = get_whisper_model(whisper_model, model_id)
                     ok_flag = True
                     break
-            time.sleep(5)
-            print('All models are busy')
+            if not ok_flag:
+                time.sleep(5)
+                print('All models are busy')
 
         # Set configs & transcribe
         if whisper_args["temperature_increment_on_fallback"] is not None:
