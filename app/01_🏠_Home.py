@@ -5,6 +5,9 @@ import streamlit as st
 from config import get_page_config, get_whisper_settings, save_whisper_settings
 from core import MediaManager
 
+import ssl
+ssl._create_default_https.context = ssl._create_unverified_context
+
 from streamlit.runtime.uploaded_file_manager import UploadedFile, UploadedFileRec
 from audiorecorder import audiorecorder
 

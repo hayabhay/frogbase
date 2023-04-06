@@ -13,11 +13,11 @@ COPY app /app
 COPY ./requirements.txt /requirements.txt
 
 # Pip install the dependencies
-RUN pip install --upgrade pip
+RUN pip --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org install --upgrade pip
 # For CPU only, you can use pip install git+https://github.com/MiscellaneousStuff/whisper.git
 # in place of openai-whisper.
 # Also, --extra-index-url https://download.pytorch.org/whl/cpu might be needed if you are using a CPU only machine
-RUN pip install --no-cache-dir -r /requirements.txt
+RUN pip install --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org --no-cache-dir -r /requirements.txt
 
 # Set the working directory to /app
 WORKDIR /app
