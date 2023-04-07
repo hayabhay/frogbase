@@ -32,7 +32,8 @@ This `mic_support` branch supports "mic input". Due to browser media access issu
 As the easiest way, you can create a self-signed-cert as follows:
 
 ```
-ssl/create-self-signed-cert.sh
+cd ssl
+create-self-signed-cert.sh
 ```
 
 ## Usage
