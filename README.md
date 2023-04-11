@@ -1,4 +1,4 @@
-# Streamlit UI for OpenAI's Whisper
+# Streamlit UI for OpenAI's Whisper (mic support)
 
 This is a simple [Streamlit UI](https://streamlit.io/) for [OpenAI's Whisper speech-to-text model](https://openai.com/blog/whisper/).
 It let's you download and transcribe media from YouTube videos, playlists, or local files.
