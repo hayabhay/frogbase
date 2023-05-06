@@ -14,6 +14,16 @@ from pytube import Playlist, YouTube
 from sqlalchemy.orm import Session
 
 
+# ---------------- Temporary Patch -------------------
+# Accessing title is currently failing due to a change in the pytube library
+# https://github.com/hayabhay/whisper-ui/issues/43
+# This is currently a temporary patch to fix the issue
+# https://github.com/pytube/pytube/commit/c0d1aca42c4106e77ab4f8a0600737ea2ad27a96
+import pytube
+pytube.innertube._default_clients['ANDROID']=pytube.innertube._default_clients['WEB']
+# ---------------- Temporary Patch -------------------
+
+
 # Whisper transcription functions
 # ----------------
 @lru_cache(maxsize=1)
@@ -107,6 +117,8 @@ class MediaManager:
             if source_type == "youtube":
                 yc = YouTube(source)
                 source_name = yc.title
+
+                print(source_name)
                 # Remove any non-alphanumeric characters from the source name and replace them with a hyphen for the directory name
                 source_dirname = "".join([c if c.isalnum() else "-" for c in source_name])
                 # itag = 140 is the audio only version
