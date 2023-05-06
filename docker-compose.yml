@@ -11,5 +11,6 @@ services:
         # TODO: Fix this to relative paths from some user-defined directory
       - ./data:/data
     restart: unless-stopped
+    init: true  # https://qiita.com/sun33/items/d62744f5746f6815f3c8
     ports:
       - 8501:8501

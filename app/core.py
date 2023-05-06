@@ -129,7 +129,7 @@ class MediaManager:
                     save_dir = self.media_dir / f"""{source_dirname}-{datetime.now().strftime("%Y-%m-%d %H-%M-%S")}"""
                 # Download the audio file
                 yc.streams.get_by_itag(140).download(save_dir, filename=save_filename)
-            elif source_type == "upload":
+            elif source_type in ["upload", "mic"]:
                 # Parse the file name from the source
                 tokens = source.name.split(".")
                 source_name = ".".join(tokens[:-1])
@@ -174,7 +174,7 @@ class MediaManager:
                 source_list = list(Playlist(source))
             else:
                 source_list = [source]
-        elif source_type == "upload":
+        elif source_type in ["upload", "mic"]:
             source_list = source if type(source) == list else [source]
 
         # Download & save the audio files and add them to the database

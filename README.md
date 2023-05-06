@@ -1,4 +1,4 @@
-# Streamlit UI for OpenAI's Whisper
+# Streamlit UI for OpenAI's Whisper (mic support)
 
 This is a simple [Streamlit UI](https://streamlit.io/) for [OpenAI's Whisper speech-to-text model](https://openai.com/blog/whisper/).
 It let's you download and transcribe media from YouTube videos, playlists, or local files.
@@ -25,12 +25,23 @@ conda env create -f environment.yml
 
 Note: If you're using a CPU-only machine, your runtime can be sped-up by using quantization implemented by [@MicellaneousStuff](https://github.com/MiscellaneousStuff) by swapping out `pip install openai-whisper` from `requirements.txt` and replacing it with their fork `pip install git+https://github.com/MiscellaneousStuff/whisper.git` (See related discussion here - https://github.com/hayabhay/whisper-ui/issues/20)
 
+## Setup SSL termination configuration
+
+This `mic_support` branch supports "mic input". Due to browser media access issue, you should use SSL termination configuration in a reverse proxy or load balancer, or you can use streamlit [HTTPS support](https://docs.streamlit.io/library/advanced-features/https-support). streamlit 1.20.0 or later supports HTTPS. "mic input" data will be treated as "uploaded".
+
+As the easiest way, you can create a self-signed-cert as follows:
+
+```
+cd ssl
+create-self-signed-cert.sh
+```
+
 ## Usage
 
 Once you're set up, you can run the app with:
 
 ```
-streamlit run app/01_🏠_Home.py
+streamlit run app/01_🏠_Home.py --server.sslCertFile 'ssl/server.crt'  --server.sslKeyFile 'ssl/server.key'
 ```
 
 This will open a new tab in your browser with the app. You can then select a YouTube URL or local file & click "Run Whisper" to run the model on the selected media.
@@ -43,7 +54,7 @@ Alternatively, you can run the app containerized with Docker via the included do
 docker compose up
 ```
 
-Then open up a new tab and navigate to [http://localhost:8501/](http://localhost:8501/)
+Then open up a new tab and navigate to [https://localhost:8501/](https://localhost:8501/)
 
 NOTE: For existing users, this will break the database since absolute paths of files are saved. A future fix will be added to fix this.
 

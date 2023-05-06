@@ -75,7 +75,8 @@ dependencies:
     - six==1.16.0
     - smmap==5.0.0
     - sqlalchemy==2.0.2
-    - streamlit==1.17.0
+    - streamlit==1.20.0
+    - streamlit-audiorecorder==0.0.2
     - tokenizers==0.13.2
     - toml==0.10.2
     - toolz==0.12.0
