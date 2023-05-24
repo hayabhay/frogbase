@@ -3,12 +3,12 @@
 # --------------------
 # Verify your cuda version to make sure the right torch gets installed
 # You can pass --extra-index-url https://download.pytorch.org/whl/cu116 (or whatever your version is)
-openai-whisper==20230124 # https://github.com/openai/whisper
+openai-whisper==20230314 # https://github.com/openai/whisper
 # Backend
 # --------------------
-pytube==12.1.2 # https://github.com/pytube/pytube
-SQLAlchemy==2.0.3 # https://github.com/sqlalchemy/sqlalchemy
+pytube==15.0 # https://github.com/pytube/pytube
+SQLAlchemy==2.0.15 # https://github.com/sqlalchemy/sqlalchemy
 
 # Frontend
 # --------------------
-streamlit==1.18.1 # https://github.com/streamlit/streamlit
+streamlit==1.22.0 # https://github.com/streamlit/streamlit
