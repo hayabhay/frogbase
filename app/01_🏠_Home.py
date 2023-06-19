@@ -1,6 +1,7 @@
 from datetime import datetime
 from pathlib import Path
 
+import math
 import streamlit as st
 from config import get_page_config, get_whisper_settings, save_whisper_settings
 from core import MediaManager
@@ -34,6 +35,13 @@ def get_formatted_date(date_str: str) -> str:
     date = date_str.strftime("%d %b %Y")
     time = date_str.strftime("%I:%M%p")
     return f"{time}, {date}"
+
+
+def paginate(data, page_size, page_num):
+    if page_size is None:
+        return []
+    offset = page_size * (page_num-1)
+    return data[offset:offset + page_size]
 
 
 # Add view
@@ -280,8 +288,13 @@ else:
     st.info(
         """Clicking on a segment will move start position to the segment (only audio player will continue playing while video will pause)"""
     )
+    
     # Iterate over all segments in the transcript
-    for segment in media["segments"]:
+    per_page = 20
+    pages_total = math.ceil(len(media["segments"]) / per_page)
+    page_number = st.selectbox(f"Pages ({pages_total})", range(1, pages_total + 1))
+    
+    for segment in paginate(media["segments"], per_page, page_number):
         # Create 2 columns
         meta_col, text_col = st.columns([1, 6], gap="small")
 
