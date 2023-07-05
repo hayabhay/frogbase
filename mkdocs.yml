@@ -1,0 +1,79 @@
+site_name: FrogBase
+site_url: https://frogbase.dev
+repo_url: https://github.com/hayabhay/frogbase
+repo_name: hayabhay/frogbase
+nav:
+  - Getting Started: index.md
+  - Installation: installation.md
+  - Usage: usage.md
+  - Contributing: contributing.md
+  - Roadmap: roadmap.md
+  - History: history.md
+theme:
+  name: material
+  language: en
+  palette:
+    - media: '(prefers-color-scheme: light)'
+      scheme: default
+      primary: teal
+      toggle:
+        icon: material/lightbulb-off
+        name: Switch to dark mode
+    - media: '(prefers-color-scheme: dark)'
+      scheme: slate
+      primary: blue grey
+      toggle:
+        icon: material/lightbulb-on
+        name: Switch to light mode
+  logo: images/logo.svg
+  favicon: images/logo.svg
+  features:
+    - navigation.indexes
+    - navigation.instant
+    - content.code.copy
+extra_css:
+  - stylesheets/extra.css
+markdown_extensions:
+  - attr_list
+  - admonition
+  - pymdownx.emoji:
+      emoji_index: '!!python/name:materialx.emoji.twemoji'
+      emoji_generator: '!!python/name:materialx.emoji.to_svg'
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.mark
+  - pymdownx.tilde
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.highlight:
+      linenums: true
+  - pymdownx.superfences
+  - pymdownx.details
+  - toc:
+      baselevel: 1
+      permalink: true
+  - meta
+plugins:
+  - include-markdown
+  - mkdocs-video
+  - search:
+      lang: en
+  - mkdocstrings:
+      watch:
+        - frogbase
+extra:
+  version:
+    provider: mike
+  social:
+    - icon: fontawesome/brands/twitter
+      # replace with your own tweet link below
+      link: https://twitter.com/hayabhay/
+      name: Tweet
+    - icon: fontawesome/brands/github
+      link: https://github.com/hayabhay/frogbase
+      name: Github
+  analytics:
+    provider: google
+    property: G-WM8FKZ2NQG
