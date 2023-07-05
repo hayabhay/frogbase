@@ -157,60 +157,67 @@ if st.session_state.listview:  # noqa: C901
     # --------------------------------
     st.write(f"## 🐸 &nbsp; Library - `{st.session_state.library}`")
     st.write("---")
-    query = st.sidebar.text_input(
-        "Search",
-        help="This is a Semantic Search Engine that searches your media library based on what is said & shown",
-    )
 
-    # Get list of media objects that match the filters
-    media_objs = fb.media.search(filters) if filters else fb.media.all()
-
-    if media_objs:
-        # Render each media object
-        for media_obj in media_objs:
-            # Create 2 columns
-            meta_col, media_col = st.columns([2, 1], gap="large")
-
-            with meta_col:
-                # Add a meta caption
-                st.write(f"#### {media_obj.title}")
-                # If dev mode is on, show the raw media object
-                if DEV:
-                    with st.expander("Raw media object", expanded=False):
-                        st.json(media_obj.model_dump())
-
-                st.markdown(get_formatted_media_info(media_obj), unsafe_allow_html=True)
-
-                # Add nav buttons
-                if st.button("🧐 &nbsp; Details", key=f"detail-{media_obj.id}"):
-                    st.session_state.listview = False
-                    st.session_state.selected_media = media_obj
-                    st.experimental_rerun()
-
-                if st.button("🗑️ &nbsp; Delete", key=f"delete-{media_obj.id}"):
-                    media_obj.delete()
-                    st.experimental_rerun()
-
-            # Render the media
-            with media_col:
-                # YouTube videos can be directly embedded by streamlit
-                if media_obj.src_name.lower() == "youtube":
-                    st.video(media_obj.src)
-                elif media_obj.is_video:
-                    st.video(media_obj.loc)
-                else:
-                    st.audio(media_obj.loc)
-
-            st.write("---")
+    if DEV:
+        query = st.sidebar.text_input(
+            "Search",
+            help="This is a Semantic Search Engine that searches your media library based on what is said & shown",
+        )
+        # TODO: Remove this later. This is a hack. Update frogbase's functionality
+        if not getattr(fb, "_index", None):
+            fb.index()
+        results = fb.search(query)
+        media_objs = [result["media"] for result in results]
     else:
-        if filters:
-            st.warning("No media found matching the filters. Try again with different filters.")
+        # Get list of media objects that match the filters
+        media_objs = fb.media.search(filters) if filters else fb.media.all()
+
+        if media_objs:
+            # Render each media object
+            for media_obj in media_objs:
+                # Create 2 columns
+                meta_col, media_col = st.columns([2, 1], gap="large")
+
+                with meta_col:
+                    # Add a meta caption
+                    st.write(f"#### {media_obj.title}")
+                    # If dev mode is on, show the raw media object
+                    if DEV:
+                        with st.expander("Raw media object", expanded=False):
+                            st.json(media_obj.model_dump())
+
+                    st.markdown(get_formatted_media_info(media_obj), unsafe_allow_html=True)
+
+                    # Add nav buttons
+                    if st.button("🧐 &nbsp; Details", key=f"detail-{media_obj.id}"):
+                        st.session_state.listview = False
+                        st.session_state.selected_media = media_obj
+                        st.experimental_rerun()
+
+                    if st.button("🗑️ &nbsp; Delete", key=f"delete-{media_obj.id}"):
+                        media_obj.delete()
+                        st.experimental_rerun()
+
+                # Render the media
+                with media_col:
+                    # YouTube videos can be directly embedded by streamlit
+                    if media_obj.src_name.lower() == "youtube":
+                        st.video(media_obj.src)
+                    elif media_obj.is_video:
+                        st.video(str(media_obj._loc.resolve()))
+                    else:
+                        st.audio(str(media_obj._loc.resolve()))
+
+                st.write("---")
         else:
-            st.info("No media found. Add some media to get started.")
-            st.write("If you just want to test the app, click the button below to add some sample media.")
-            if st.button("Add sample media"):
-                fb.demo()
-                st.experimental_rerun()
+            if filters:
+                st.warning("No media found matching the filters. Try again with different filters.")
+            else:
+                st.info("No media found. Add some media to get started.")
+                st.write("If you just want to test the app, click the button below to add some sample media.")
+                if st.button("Add sample media"):
+                    fb.demo()
+                    st.experimental_rerun()
 
 
 # Detail view
@@ -243,11 +250,11 @@ if not st.session_state.listview:
             st.experimental_rerun()
 
     # YouTube videos can be directly embedded by streamlit
-    st.sidebar.audio(media_obj.loc, start_time=st.session_state.selected_media_offset)
+    st.sidebar.audio(str(media_obj._loc.resolve()), start_time=st.session_state.selected_media_offset)
     if media_obj.src_name.lower() == "youtube":
         st.sidebar.video(media_obj.src, start_time=st.session_state.selected_media_offset)
     elif media_obj.is_video:
-        st.sidebar.video(media_obj.loc, start_time=st.session_state.selected_media_offset)
+        st.sidebar.video(str(media_obj._loc.resolve()), start_time=st.session_state.selected_media_offset)
 
     with st.expander("📝 &nbsp; About"):
         st.markdown(get_formatted_media_info(media_obj, details=True), unsafe_allow_html=True)

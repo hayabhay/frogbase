@@ -108,6 +108,8 @@ class FrogBase:
         # In addition, a fair number of variables are set up in the library setter.
         self.library = self._default_library
 
+        self._media_buffer = []
+
         # NOTE: Do not add any code after the library setter unless they're
         # related to the library setter.
 
