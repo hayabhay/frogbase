@@ -399,36 +399,21 @@ class ModelManager:
             if embed_id in embeddings and not overwrite:
                 self._logger.info(f"Embedding <id: {embed_id}> already exists. Skipping.")
                 continue
-
-            # Load caption segments
-            segments = [{"start": int(c._start), "end": int(c._end), "text": c.text} for c in captions_obj.load()]
-
-            # NOTE: Running a window over segments make the embeddings somewhat fuzzy
-            # NOTE: It is better for retrieval to start early than overshoot the end
-            # TODO: Experiment and find the best window size. For now, each segment is considered as-is
-            # segment_texts = []
-            # # For each caption segment, embed it
-            # for i in range(len(segments)):
-            #     # Get the caption text
-            #     segment_text = [segments[i]["text"]]
-            #     for j in range(i + 1, len(segments)):
-            #         segment_text += segments[j]["text"]
-            #         if segments[j]["start"] > segments[i]["start"] + 10:
-            #             break
-            #     # Combine the caption text and lookahead text
-            #     segment_texts.append({
-            #         "start": int(segments[i]["start"]),
-            #         "text": " ".join(segment_text)
-            #     })
+            # Load captions
+            # TODO: Experiment with adding windows over caption segments instead of a single segment
+            captions = list(captions_obj.load())
 
             # Embed caption segments
-            features = model.encode([s["text"] for s in segments], show_progress_bar=True, convert_to_numpy=True)
+            features = model.encode(
+                [segment["text"] for segment in captions], show_progress_bar=True, convert_to_numpy=True
+            )
             embeddings[embed_id] = {
                 "media_id": media_obj.id,
                 "captions_id": captions_obj.id,
                 "model": model_name,
                 "embeddings": features,
-                "timestamps": [s["start"] for s in segments],
+                "start_timestamps": [segment["start"] for segment in captions],
+                "segment_ids": [segment["id"] for segment in captions],
             }
 
             # Add the media object to the list of embedded media
@@ -448,16 +433,20 @@ class ModelManager:
     # ========================== Indexing ==========================
     def index(
         self,
-        media: None | Media | list[Media] = None,
+        # media: None | Media | list[Media] = None,
         indexer: str | None = None,
         embedding_source: str | None = None,
         **params: dict[str, Any],
     ) -> dict[str, Any]:
         """Index one or more media with a specified indexing engine and parameters."""
+        # NOTE: This is a placeholder for demo & testing purposes.
+        # TODO: Add functionality to manage both indices & embeddings within them
+        # This is especially important if and when new embeddings are generated from
+        # different transcribers
 
         # If media is not a list, convert it to a list.
-        if not isinstance(media, list):
-            media = [media]
+        # if not isinstance(media, list):
+        #     media = [media]
 
         if indexer and indexer not in self._allowed_indexers:
             self._logger.error(f"Indexer {indexer} not found. Using default indexer.")
@@ -533,13 +522,21 @@ class ModelManager:
 
         # Add the embeddings to the index
         # Labels are media ids and start times
+        # TODO: Refactor.
         labels = []
         data = []
         indexed = set(index_meta.values())
         for meta in embeddings.values():
-            # If the first element is indexed, assume all elements are indexed
-            if f"{meta['media_id']}::{meta['timestamps'][0]}" not in indexed:
-                labels += [f"{meta['media_id']}::{st}" for st in meta["timestamps"]]
+            label_prefix = f"{meta['media_id']}::{meta['captions_id']}"
+            skipped = False
+            for segment_id, start_timestamp in zip(meta["segment_ids"], meta["start_timestamps"]):
+                label = f"{label_prefix}::{segment_id}::{start_timestamp}"
+                # If the first element is indexed, assume all elements are indexed
+                if label in indexed:
+                    skipped = True
+                    break
+                labels.append(label)
+            if not skipped:
                 data.append(meta["embeddings"])
 
         # Update label maps

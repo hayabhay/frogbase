@@ -88,14 +88,30 @@ class Captions(BaseModel):
             Dictionary containing the captions data in the form of a standard captions object.
             This is a subset of openai's transcript format.
         """
-        if fmt == "json":
-            json_fname = f"{self._loc.stem}.{fmt}"
-            with open((self._loc.parent / json_fname).resolve()) as f:
-                return json.load(f)
-        elif fmt == "vtt" or fmt == "srt":
-            return webvtt.read(str(self._loc.resolve()))
+        if fmt == "vtt" or fmt == "srt":
+            captions_reader = (
+                webvtt.read(str(self._loc.resolve())) if fmt == "vtt" else webvtt.from_srt(str(self._loc.resolve()))
+            )
+            for segment_id, captions in enumerate(captions_reader):
+                yield {
+                    "id": segment_id,
+                    "start": captions.start_in_seconds,
+                    "end": captions.end_in_seconds,
+                    "start_str": captions.start,
+                    "end_str": captions.end,
+                    "text": captions.text,
+                }
         else:
             raise ValueError(f"Unsupported or missing captions for '{fmt}' format.")
+
+    def _load_whisper_json(self) -> dict[str, Any]:
+        """Internal method to load whisper's json dump if available."""
+        json_fname = f"{self._loc.stem}.{json}"
+        if not (self._loc.parent / json_fname).exists():
+            raise ValueError(f"Missing whisper json file for {self._loc.name}")
+        else:
+            with open((self._loc.parent / json_fname).resolve()) as f:
+                return json.load(f)
 
     def delete(self, bkup_files: bool = True) -> None:
         """Delete this captions object from db and file."""
@@ -155,7 +171,8 @@ class CaptionsManager:
         captions_dicts = sorted(captions_dicts, key=lambda x: x["created"], reverse=True)
         return [Captions(config=self._config, **captions_dict) for captions_dict in captions_dicts]
 
-    def latest(self) -> Captions:
+    # TODO: Fix this.
+    def latest(self, prefer_subtitles=True) -> Captions:
         """Get the latest captions object from db for the given media.
 
         Returns:
@@ -163,4 +180,11 @@ class CaptionsManager:
         """
         captions_dicts = self._table.search(Query().media_id == self.media_id)
         captions_dicts = sorted(captions_dicts, key=lambda x: x["created"], reverse=True)
-        return Captions(config=self._config, **captions_dicts[0]) if captions_dicts else None
+        captions_dict = None
+        if prefer_subtitles:
+            for captions_dict in captions_dicts:
+                if captions_dict["kind"] == "subtitles":
+                    break
+        # Else pick the first one if it exists.
+        captions_dict = captions_dict or captions_dicts[0]
+        return Captions(config=self._config, **captions_dict) if captions_dict else None

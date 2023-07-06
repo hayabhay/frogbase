@@ -100,7 +100,7 @@ if st.session_state.listview:  # noqa: C901
             #     pass
 
             if sources:
-                fb.add(sources, **opts).transcribe(ignore_captioned=True)
+                fb.add(sources, **opts).transcribe(ignore_captioned=False).embed().index()
                 st.success("Media downloading & processing in progress.")
 
             # Set list mode to true
@@ -158,16 +158,52 @@ if st.session_state.listview:  # noqa: C901
     st.write(f"## 🐸 &nbsp; Library - `{st.session_state.library}`")
     st.write("---")
 
-    if DEV:
-        query = st.sidebar.text_input(
-            "Search",
-            help="This is a Semantic Search Engine that searches your media library based on what is said & shown",
-        )
-        # TODO: Remove this later. This is a hack. Update frogbase's functionality
-        if not getattr(fb, "_index", None):
-            fb.index()
+    query = st.sidebar.text_input(
+        "Search",
+        help="This is a Semantic Search Engine that searches your media library based on what is said & shown",
+    )
+    if query:
+        # TODO: This is currently a hack.
         results = fb.search(query)
-        media_objs = [result["media"] for result in results]
+        search_quality = st.sidebar.slider("Quality", min_value=0.0, max_value=1.0, value=0.2, step=0.05)
+        if DEV:
+            with st.expander("🐞 &nbsp; Results json", expanded=False):
+                st.write(results)
+
+        # Filter results. Threshold is set to 0.5 for now
+        results = [result for result in results if result["score"] > search_quality]
+
+        if not results:
+            st.info("No results found. Try a different query or lower the quality threshold.")
+        else:
+            # Render results
+            for result in results:
+                media = result["media"]
+                segment = result["segment"]
+                # Create 2 columns
+                meta_col, media_col = st.columns([2, 1], gap="large")
+
+                with meta_col:
+                    # Add a meta caption
+                    st.write(f"#### `{segment['text']}`")
+                    st.markdown(get_formatted_media_info(media), unsafe_allow_html=True)
+                    st.markdown("")
+
+                    # Add nav buttons
+                    if st.button("🧐 &nbsp; Details", key=f"detail-{media.id}-{segment['id']}"):
+                        st.session_state.listview = False
+                        st.session_state.selected_media = media
+                        st.experimental_rerun()
+
+                with media_col:
+                    if media.src_name.lower() == "youtube":
+                        st.video(media.src, start_time=int(segment["start"]))
+                    elif media.is_video:
+                        st.video(str(media._loc.resolve()), start_time=int(segment["start"]))
+                    else:
+                        st.audio(str(media._loc.resolve()), start_time=int(segment["start"]))
+                st.write("---")
+
     else:
         # Get list of media objects that match the filters
         media_objs = fb.media.search(filters) if filters else fb.media.all()
@@ -273,19 +309,19 @@ if not st.session_state.listview:
                     st.json(caption_obj.model_dump())
 
                 # Load the caption file
-                captions_vtt = caption_obj.load()
+                segments = caption_obj.load()
 
-                for caption in captions_vtt:
+                for segment in segments:
                     # Create 2 columns
                     meta_col, text_col = st.columns([1, 6], gap="small")
 
                     with meta_col:
                         if st.button(
-                            f"▶️ &nbsp; {int(caption._start)} - {int(caption._end)}",
-                            key=f"play-{caption._start}-{caption._end}",
+                            f"▶️ &nbsp; {int(segment['start'])} - {int(segment['end'])}",
+                            key=f"play-{segment['start']}-{segment['end']}",
                         ):
-                            st.session_state.selected_media_offset = int(caption._start)
+                            st.session_state.selected_media_offset = int(segment["start"])
                             st.experimental_rerun()
 
                     with text_col:
-                        st.write(f"##### `{caption.text}`")
+                        st.write(f"##### `{segment['text']}`")

@@ -371,7 +371,7 @@ class MediaManager:
                     captions_obj = Captions(
                         id=captions_id,
                         media_id=media_id,
-                        loc=str(newfilepath),
+                        loc=str(newfilepath.relative_to(self._config.libdir)),
                         infoloc=str(
                             (infojson.parent / ".bkup" / f"{captions_id}.captions.fb.json").relative_to(
                                 self._config.libdir
