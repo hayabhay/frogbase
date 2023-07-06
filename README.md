@@ -15,6 +15,7 @@ fb = FrogBase()
 fb.demo()
 fb.search("What is the name of the squeaky frog?")
 ```
+
 > [Full Documentation](https://hayabhay.github.io/frogbase/) (WIP).
 
 _FrogBase also comes with a **ready-to-use UI for non-technical users!**_

@@ -93,7 +93,21 @@ class Captions(BaseModel):
             with open((self._loc.parent / json_fname).resolve()) as f:
                 return json.load(f)
         elif fmt == "vtt" or fmt == "srt":
-            return webvtt.read(str(self._loc.resolve()))
+            captions_reader = (
+                webvtt.read(str(self._loc.resolve())) if fmt == "vtt" else webvtt.from_srt(str(self._loc.resolve()))
+            )
+            captions = [
+                {
+                    "id": segment_id,
+                    "start": captions.start_in_seconds,
+                    "end": captions.end_in_seconds,
+                    "start_str": captions.start,
+                    "end_str": captions.end,
+                    "text": captions.text,
+                }
+                for segment_id, captions in enumerate(captions_reader)
+            ]
+            return captions
         else:
             raise ValueError(f"Unsupported or missing captions for '{fmt}' format.")
 
@@ -155,7 +169,8 @@ class CaptionsManager:
         captions_dicts = sorted(captions_dicts, key=lambda x: x["created"], reverse=True)
         return [Captions(config=self._config, **captions_dict) for captions_dict in captions_dicts]
 
-    def latest(self) -> Captions:
+    # TODO: Fix this.
+    def latest(self, prefer_subtitles=True) -> Captions:
         """Get the latest captions object from db for the given media.
 
         Returns:
@@ -163,4 +178,11 @@ class CaptionsManager:
         """
         captions_dicts = self._table.search(Query().media_id == self.media_id)
         captions_dicts = sorted(captions_dicts, key=lambda x: x["created"], reverse=True)
-        return Captions(config=self._config, **captions_dicts[0]) if captions_dicts else None
+        captions_dict = None
+        if prefer_subtitles:
+            for captions_dict in captions_dicts:
+                if captions_dict["kind"] == "subtitles":
+                    break
+        # Else pick the first one if it exists.
+        captions_dict = captions_dict or captions_dicts[0]
+        return Captions(config=self._config, **captions_dict) if captions_dict else None

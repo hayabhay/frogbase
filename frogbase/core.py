@@ -109,6 +109,7 @@ class FrogBase:
         self.library = self._default_library
 
         self._media_buffer = []
+        self._index = None
 
         # NOTE: Do not add any code after the library setter unless they're
         # related to the library setter.
@@ -296,23 +297,25 @@ class FrogBase:
 
     def index(
         self,
-        media: None | Media | list[Media] = None,
+        # media: None | Media | list[Media] = None,
         indexer: str | None = None,
         embedding_source: str | None = None,
         **params: dict[str, Any],
     ) -> dict[str, Any]:
         """Builds a search index from the embedded media."""
-        # If running without arguments, assume it is running in chain mode.
-        # If nothing is in the media buffer, use all media in the library.
-        if not media:
-            if self._media_buffer:
-                self._logger.info(f"Building index for {len(self._media_buffer)} media in the batch.")
-                media = self._media_buffer
-            else:
-                self._logger.info("Building index for all the media in the library.")
-                media = self.media.all()
+        # TODO: Fix this
+        # # If running without arguments, assume it is running in chain mode.
+        # # If nothing is in the media buffer, use all media in the library.
+        # if not media:
+        #     if self._media_buffer:
+        #         self._logger.info(f"Building index for {len(self._media_buffer)} media in the batch.")
+        #         media = self._media_buffer
+        #     else:
+        #         self._logger.info("Building index for all the media in the library.")
+        #         media = self.media.all()
 
-        self._index = self.models.index(media, indexer, embedding_source, **params)
+        self._index = self.models.index(indexer, embedding_source, **params)
+        # self._index = self.models.index(media, indexer, embedding_source, **params)
 
         return self._index
 
@@ -325,25 +328,29 @@ class FrogBase:
         index: None | dict[str, Any] = None,
     ) -> list[dict[str, Any]]:
         """Searches the index for the query string."""
+        # TODO: Fix this
         if not index:
-            index = self._index
-
+            if not self._index:
+                index = self.index()
+            else:
+                index = self._index
         if not index:
             raise ValueError("No index found. Please load an index first.")
 
         # First encode the query
         query = self._index["encoder"].encode(query)
         # Then search the index
-        segment_ids, distances = self._index["index"].knn_query(query, k=k)
+        entity_ids, distances = self._index["index"].knn_query(query, k=k)
 
         results = []
-        for segment_id, distance in zip(segment_ids[0], distances[0]):
+        for entity_id, distance in zip(entity_ids[0], distances[0]):
             # Get the label for the segment
-            label = self._index["meta"][segment_id]
-            media_id, start_time = label.split("::")
-            results.append(
-                {"media": self.media.get(media_id), "start_time": float(start_time), "score": float(1 - distance)}
-            )
+            label = self._index["meta"][entity_id]
+            media_id, caption_id, segment_id, start_time = label.split("::")
+            media_obj = self.media.get(media_id)
+            captions_obj = media_obj.captions.get(caption_id)
+            captions = captions_obj.load()
+            results.append({"media": media_obj, "segment": captions[int(segment_id)], "score": float(1 - distance)})
 
         return results
 
