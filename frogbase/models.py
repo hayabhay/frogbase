@@ -401,7 +401,7 @@ class ModelManager:
                 continue
             # Load captions
             # TODO: Experiment with adding windows over caption segments instead of a single segment
-            captions = captions_obj.load()
+            captions = list(captions_obj.load())
 
             # Embed caption segments
             features = model.encode(

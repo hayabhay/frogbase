@@ -100,7 +100,7 @@ if st.session_state.listview:  # noqa: C901
             #     pass
 
             if sources:
-                fb.add(sources, **opts).transcribe(ignore_captioned=True).embed().index()
+                fb.add(sources, **opts).transcribe(ignore_captioned=False).embed().index()
                 st.success("Media downloading & processing in progress.")
 
             # Set list mode to true

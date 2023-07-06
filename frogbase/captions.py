@@ -88,16 +88,12 @@ class Captions(BaseModel):
             Dictionary containing the captions data in the form of a standard captions object.
             This is a subset of openai's transcript format.
         """
-        if fmt == "json":
-            json_fname = f"{self._loc.stem}.{fmt}"
-            with open((self._loc.parent / json_fname).resolve()) as f:
-                return json.load(f)
-        elif fmt == "vtt" or fmt == "srt":
+        if fmt == "vtt" or fmt == "srt":
             captions_reader = (
                 webvtt.read(str(self._loc.resolve())) if fmt == "vtt" else webvtt.from_srt(str(self._loc.resolve()))
             )
-            captions = [
-                {
+            for segment_id, captions in enumerate(captions_reader):
+                yield {
                     "id": segment_id,
                     "start": captions.start_in_seconds,
                     "end": captions.end_in_seconds,
@@ -105,11 +101,17 @@ class Captions(BaseModel):
                     "end_str": captions.end,
                     "text": captions.text,
                 }
-                for segment_id, captions in enumerate(captions_reader)
-            ]
-            return captions
         else:
             raise ValueError(f"Unsupported or missing captions for '{fmt}' format.")
+
+    def _load_whisper_json(self) -> dict[str, Any]:
+        """Internal method to load whisper's json dump if available."""
+        json_fname = f"{self._loc.stem}.{json}"
+        if not (self._loc.parent / json_fname).exists():
+            raise ValueError(f"Missing whisper json file for {self._loc.name}")
+        else:
+            with open((self._loc.parent / json_fname).resolve()) as f:
+                return json.load(f)
 
     def delete(self, bkup_files: bool = True) -> None:
         """Delete this captions object from db and file."""

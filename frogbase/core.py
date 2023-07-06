@@ -349,7 +349,7 @@ class FrogBase:
             media_id, caption_id, segment_id, start_time = label.split("::")
             media_obj = self.media.get(media_id)
             captions_obj = media_obj.captions.get(caption_id)
-            captions = captions_obj.load()
+            captions = list(captions_obj.load())
             results.append({"media": media_obj, "segment": captions[int(segment_id)], "score": float(1 - distance)})
 
         return results
