@@ -186,7 +186,15 @@ class FrogBase:
         # NOTE: Right now any version change will re-create tinydb and purge
         # all existing data to ensure compatibility. Later, this can be updated
         # to only re-create the tinydb data if the minor version changes.
-        db_meta = self._db.get(Query().type == "meta") if self._db else None
+        # NOTE: Temporary hack to kill tinydb if it fails to load. Fix this later
+        try:
+            db_meta = self._db.get(Query().type == "meta") if self._db else None
+        except Exception as e:
+            self._logger.error(f"Failed to load tinydb instance. Error: {e}")
+            self._db.close()
+            self._dbpath.unlink()
+            self._db = None
+            
         if db_meta and db_meta["__version__"] < self._version:
             self._logger.info(f"Existing tinydb version: {db_meta['__version__']} is stale. Removing.")
             self._db.close()
