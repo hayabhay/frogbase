@@ -31,7 +31,7 @@ https://user-images.githubusercontent.com/6735526/216852681-53b6c3db-3e74-4c86-8
 [pypi_]: https://pypi.org/project/frogbase/
 [status]: https://pypi.org/project/frogbase/
 [python version]: https://pypi.org/project/frogbase
-[discord]: https://discord.gg/e23YJWqu
+[discord]: https://discord.gg/HKkpnx8pU
 [license]: https://github.com/hayabhay/frogbase/blob/main/LICENSE
 
 ## Features
@@ -108,7 +108,7 @@ git clone https://github.com/hayabhay/frogbase.git
 
 - [Documentation](https://hayabhay.github.io/frogbase/)
 - [Issues](https://github.com/hayabhay/frogbase/issues) & [Discussions](https://github.com/hayabhay/frogbase/discussions)
-- [Discord](https://discord.gg/e23YJWqu)
+- [Discord](https://discord.gg/HKkpnx8pU)
 - [History](docs/history.md)
 - [Roadmap](docs/roadmap.md)
 - [Contributing Guide](docs/contributing.md)
