@@ -9,6 +9,8 @@ with speech-to-text models ([OpenAI's Whisper](https://github.com/openai/whisper
 image & text encoders ([SentenceTransformers](https://github.com/UKPLab/sentence-transformers)),
 and embedding stores ([hnswlib](https://github.com/nmslib/hnswlib)).
 
+> ⚠️ Warning: This is currently a pre-release version and is known to be very unstable. For stable releases, please use any 1.x versions.
+
 ```python
 from frogbase import FrogBase
 fb = FrogBase()
