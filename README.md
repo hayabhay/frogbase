@@ -28,12 +28,10 @@ https://user-images.githubusercontent.com/6735526/216852681-53b6c3db-3e74-4c86-8
 [![Status](https://img.shields.io/pypi/status/frogbase.svg)][status]
 [![Python Version](https://img.shields.io/pypi/pyversions/frogbase)][python version]
 [![License](https://img.shields.io/pypi/l/frogbase)][license]
-[![Discord](https://img.shields.io/discord/1120743576435949689)][discord]
 
 [pypi_]: https://pypi.org/project/frogbase/
 [status]: https://pypi.org/project/frogbase/
 [python version]: https://pypi.org/project/frogbase
-[discord]: https://discord.gg/HKkpnx8pU
 [license]: https://github.com/hayabhay/frogbase/blob/main/LICENSE
 
 ## Features
