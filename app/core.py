@@ -116,8 +116,14 @@ class MediaManager:
 
         # Write transcripts into the same directory as the audio file
         audio_dir = Path(media_obj.filepath).parent
-        writer = whisper.utils.get_writer("all", audio_dir)
-        writer(transcript, "transcript")
+        writer = whisper.utils.get_writer("srt", audio_dir)
+        writer(transcript,
+               audio_path="transcript",
+               options={
+                   "max_line_width": None,
+                   "max_line_count": None,
+                   "highlight_words": None
+               })
 
         # Add transcript to the database
         self.session.add(
