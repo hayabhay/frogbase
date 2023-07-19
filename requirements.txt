@@ -4,7 +4,8 @@
 # Verify your cuda version to make sure the right torch gets installed
 # You can pass --extra-index-url https://download.pytorch.org/whl/cu116 (or whatever your version is)
 transformers
-openai-whisper==20230124 # https://github.com/openai/whisper
+# openai-whisper==20230124 # https://github.com/openai/whisper
+git+https://github.com/openai/whisper.git
 git+https://github.com/duvu/pytube.git
 # Backend
 # --------------------

@@ -6,7 +6,7 @@ PERM_URL='https://your.url.com'
 my_url=None
 new_url=''
 
-# you can check if the service is alive by:
+# you can check if the service is alive by: 
 # curl http://localhost:4040/api/tunnels
 
 def get_ngrok_url():
