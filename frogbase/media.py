@@ -442,6 +442,8 @@ class MediaManager:
             media_dir = Path(self._config.libdir) / media_dirname
             media_dir.mkdir(parents=True, exist_ok=True)
             dest_file = media_dir / media_file.name
+            # Get stat about the source media file
+            media_stat = media_file.stat()
 
             # Copy/move the media file to the subdirectory.
             if move:
@@ -461,7 +463,7 @@ class MediaManager:
                 src_name="disk",
                 uploader_id=platform.node(),
                 uploader_name=platform.node(),
-                upload_date=datetime.fromtimestamp(media_file.stat().st_ctime).strftime("%Y%m%d"),
+                upload_date=datetime.fromtimestamp(media_stat.st_ctime).strftime("%Y%m%d"),
                 duration=media_fmt.get("duration"),
                 filesize=media_fmt.get("size"),
                 config=self._config,
