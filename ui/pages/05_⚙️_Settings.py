@@ -51,6 +51,8 @@ with st.expander("# ⚙️ Settings", expanded=False), st.form("whisper_config")
     )
     task_options = ["transcribe", "translate"]
     task = st.selectbox("Default mode", options=task_options, index=task_options.index(fb.models.whisper.task))
+    lang_options = ['en', 'zh', 'de', 'es', 'ru', 'ko', 'fr', 'ja', 'pt', 'tr', 'pl', 'ca', 'nl', 'ar', 'sv', 'it', 'id', 'hi', 'fi', 'vi', 'he', 'uk', 'el', 'ms', 'cs', 'ro', 'da', 'hu', 'ta', 'no', 'th', 'ur', 'hr', 'bg', 'lt', 'la', 'mi', 'ml', 'cy', 'sk', 'te', 'fa', 'lv', 'bn', 'sr', 'az', 'sl', 'kn', 'et', 'mk', 'br', 'eu', 'is', 'hy', 'ne', 'mn', 'bs', 'kk', 'sq', 'sw', 'gl', 'mr', 'pa', 'si', 'km', 'sn', 'yo', 'so', 'af', 'oc', 'ka', 'be', 'tg', 'sd', 'gu', 'am', 'yi', 'lo', 'uz', 'fo', 'ht', 'ps', 'tk', 'nn', 'mt', 'sa', 'lb', 'my', 'bo', 'tl', 'mg', 'as', 'tt', 'haw', 'ln', 'ha', 'ba', 'jw', 'su']
+    language = st.selectbox("Language", options=lang_options, index=lang_options.index(fb.models.whisper.language))
 
     save_config = st.form_submit_button(label="💾 Save")
     success_container = st.empty()
@@ -65,5 +67,6 @@ with st.expander("# ⚙️ Settings", expanded=False), st.form("whisper_config")
         fb.models.whisper.compression_ratio_threshold = compression_ratio_threshold
         fb.models.whisper.condition_on_previous_text = condition_on_previous_text
         fb.models.whisper.task = task
+        fb.models.whisper.language = language
         fb.models.save_settings()
         success_container.success("Settings saved!")
