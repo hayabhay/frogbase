@@ -307,6 +307,11 @@ if not st.session_state.listview:
             with tab:
                 with st.expander("📝 &nbsp; Caption Info", expanded=False):
                     st.json(caption_obj.model_dump())
+                
+                # Caption download link (VTT file)
+                caption_file_path = st.session_state.fb.config.libdir / caption_obj.loc
+                with open(caption_file_path) as f:
+                    st.download_button('Download WebVTT (VTT file)', f, file_name=f"{media_obj.title}.vtt")
 
                 # Load the caption file
                 segments = caption_obj.load()
