@@ -2,8 +2,9 @@ import re
 from datetime import datetime
 from pathlib import Path
 
+import openai
 import streamlit as st
-from config import DATADIR, DEV, TEMP_DIR, get_page_config, init_session
+from config import DATADIR, DEV, OPENAI_KEY, TEMP_DIR, get_page_config, init_session
 from tinydb import Query
 from utils import get_formatted_media_info
 
@@ -15,6 +16,9 @@ init_session(st.session_state)
 if DEV:
     with st.sidebar.expander("Session state"):
         st.write(st.session_state)
+
+if DEV:
+    openai.api_key = OPENAI_KEY
 
 # Aliases for readability
 # --------------------------------
@@ -259,6 +263,15 @@ if not st.session_state.listview:
     if DEV:
         with st.expander("Media object", expanded=False):
             st.write(media_obj.model_dump())
+            # This is currently hidden here to prevent clutter and will later be removed
+            context = st.text_area(
+                "Context",
+                value=(
+                    "Using the following content as transcript, your job is answer the following questions.\n"
+                    "Answer with a couple of sentences in Snoop Dogg's style. Be very snazzy and creative. "
+                ),
+            )
+            temperature = st.slider("Temperature", min_value=0.0, max_value=2.0, value=0.5, step=0.05)
 
     # Render mini nav
     back_col, del_col = st.sidebar.columns(2)
@@ -282,6 +295,34 @@ if not st.session_state.listview:
 
     with st.expander("📝 &nbsp; About"):
         st.markdown(get_formatted_media_info(media_obj, details=True), unsafe_allow_html=True)
+
+    if DEV:
+        with st.expander("🤔 &nbsp; Ask", expanded=False):
+            qcol, acol = st.columns(
+                [6, 1],
+            )
+            question = qcol.text_input("Ask a question", key="question", label_visibility="collapsed")
+            ask = acol.button("tell me!", key="ask")
+            captions_obj = media_obj.captions.latest()
+            transcript = "\n".join([segment["text"] for segment in captions_obj.load()])
+            context_style = context.split("\n")[-1]
+            if ask:
+                response = openai.ChatCompletion.create(
+                    model="gpt-3.5-turbo",
+                    stream=True,
+                    temperature=temperature,
+                    messages=[
+                        {"role": "system", "content": f"{context}\n\n{transcript}\n\n{context_style}"},
+                        {"role": "user", "content": question},
+                    ],
+                )
+                with st.empty():
+                    text = ""
+                    for chunk in response:
+                        delta = chunk["choices"][0]["delta"]
+                        if "content" in delta:
+                            text += delta["content"]
+                        st.write(f"### 🐸 &nbsp; `{text}`")
 
     # Render captions
     captions = media_obj.captions.all()

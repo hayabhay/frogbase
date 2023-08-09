@@ -20,6 +20,7 @@ VERBOSE = os.getenv("FROGBASE_VERBOSE", False)
 DATADIR = os.getenv("FROGBASE_DATADIR", APP_DIR / "data")
 LIBRARY = os.getenv("FROGBASE_LIBRARY", "frogverse")
 PERSIST = os.getenv("FROGBASE_PERSIST", True)
+OPENAI_KEY = os.getenv("OPENAI_KEY", None)
 
 # Common page configurations
 # --------------------------
