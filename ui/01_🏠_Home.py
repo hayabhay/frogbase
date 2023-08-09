@@ -2,8 +2,9 @@ import re
 from datetime import datetime
 from pathlib import Path
 
+import openai
 import streamlit as st
-from config import DATADIR, DEV, TEMP_DIR, get_page_config, init_session
+from config import DATADIR, DEV, OPENAI_KEY, TEMP_DIR, get_page_config, init_session
 from tinydb import Query
 from utils import get_formatted_media_info
 
@@ -16,6 +17,9 @@ if DEV:
     with st.sidebar.expander("Session state"):
         st.write(st.session_state)
 
+if DEV:
+    openai.api_key = OPENAI_KEY
+
 # Aliases for readability
 # --------------------------------
 fb = st.session_state.fb
@@ -26,18 +30,6 @@ fb = st.session_state.fb
 if st.session_state.listview:  # noqa: C901
     # Reset detail view session state
     st.session_state.selected_media_offset = 0
-
-    # Library selection widget
-    # --------------------------------
-    with st.sidebar.expander("📚 &nbsp; Libraries", expanded=False):
-        existing_libraries = [p.name for p in Path(DATADIR).iterdir() if p.is_dir()]
-        selected_library = st.selectbox(
-            "Select Library", options=existing_libraries, index=existing_libraries.index(st.session_state.library)
-        )
-        if selected_library != st.session_state.library:
-            # Update session state
-            init_session(st.session_state, library=selected_library, reset=True)
-            st.experimental_rerun()
 
     # Add Media widget
     # --------------------------------
@@ -100,7 +92,7 @@ if st.session_state.listview:  # noqa: C901
             #     pass
 
             if sources:
-                fb.add(sources, **opts).transcribe(ignore_captioned=False).embed().index()
+                fb.add(sources, **opts)
                 st.success("Media downloading & processing in progress.")
 
             # Set list mode to true
@@ -271,6 +263,15 @@ if not st.session_state.listview:
     if DEV:
         with st.expander("Media object", expanded=False):
             st.write(media_obj.model_dump())
+            # This is currently hidden here to prevent clutter and will later be removed
+            context = st.text_area(
+                "Context",
+                value=(
+                    "Using the following content as transcript, your job is answer the following questions.\n"
+                    "Answer with a couple of sentences in Snoop Dogg's style. Be very snazzy and creative. "
+                ),
+            )
+            temperature = st.slider("Temperature", min_value=0.0, max_value=2.0, value=0.5, step=0.05)
 
     # Render mini nav
     back_col, del_col = st.sidebar.columns(2)
@@ -295,6 +296,34 @@ if not st.session_state.listview:
     with st.expander("📝 &nbsp; About"):
         st.markdown(get_formatted_media_info(media_obj, details=True), unsafe_allow_html=True)
 
+    if DEV:
+        with st.expander("🤔 &nbsp; Ask", expanded=False):
+            qcol, acol = st.columns(
+                [6, 1],
+            )
+            question = qcol.text_input("Ask a question", key="question", label_visibility="collapsed")
+            ask = acol.button("tell me!", key="ask")
+            captions_obj = media_obj.captions.latest()
+            transcript = "\n".join([segment["text"] for segment in captions_obj.load()])
+            context_style = context.split("\n")[-1]
+            if ask:
+                response = openai.ChatCompletion.create(
+                    model="gpt-3.5-turbo",
+                    stream=True,
+                    temperature=temperature,
+                    messages=[
+                        {"role": "system", "content": f"{context}\n\n{transcript}\n\n{context_style}"},
+                        {"role": "user", "content": question},
+                    ],
+                )
+                with st.empty():
+                    text = ""
+                    for chunk in response:
+                        delta = chunk["choices"][0]["delta"]
+                        if "content" in delta:
+                            text += delta["content"]
+                        st.write(f"### 🐸 &nbsp; `{text}`")
+
     # Render captions
     captions = media_obj.captions.all()
 
@@ -307,16 +336,18 @@ if not st.session_state.listview:
             with tab:
                 with st.expander("📝 &nbsp; Caption Info", expanded=False):
                     st.json(caption_obj.model_dump())
-                
+
                 # Caption download link (VTT file)
                 caption_file_path = st.session_state.fb.config.libdir / caption_obj.loc
                 with open(caption_file_path) as f:
-                    st.download_button('Download WebVTT (VTT file)', f, file_name=f"{media_obj.title}.vtt")
+                    st.download_button("Download WebVTT (VTT file)", f, file_name=f"{media_obj.title}.vtt")
 
                 # Load the caption file
                 segments = caption_obj.load()
 
                 for segment in segments:
+                    if not segment["text"].strip():
+                        continue
                     # Create 2 columns
                     meta_col, text_col = st.columns([1, 6], gap="small")
 

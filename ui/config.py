@@ -1,8 +1,12 @@
+import os
 import sys
 import tempfile
 from pathlib import Path
 
-from dotenv import dotenv_values
+from dotenv import load_dotenv
+
+# This will load the environment variables from .env file from whereever it is called
+load_dotenv()
 
 # Project structure
 # -----------------
@@ -10,15 +14,13 @@ APP_DIR = Path(__file__).parent.absolute()
 PROJECT_DIR = APP_DIR.parent.absolute()
 TEMP_DIR = Path(tempfile.gettempdir())
 
-# Environment variables
-# ---------------------
-# NOTE: .env is assumed to be in the streamlit app directory
-env = dotenv_values(dotenv_path=APP_DIR / ".env")
-
 # Site wide config can be set using environment variables
-DEV = env.get("DEV", False)
-VERBOSE = env.get("VERBOSE", False)
-DATADIR = env.get("DATADIR", APP_DIR / "data")
+DEV = os.getenv("FROGBASE_DEV", False)
+VERBOSE = os.getenv("FROGBASE_VERBOSE", False)
+DATADIR = os.getenv("FROGBASE_DATADIR", APP_DIR / "data")
+LIBRARY = os.getenv("FROGBASE_LIBRARY", "frogverse")
+PERSIST = os.getenv("FROGBASE_PERSIST", True)
+OPENAI_KEY = os.getenv("OPENAI_KEY", None)
 
 # Common page configurations
 # --------------------------
@@ -46,7 +48,7 @@ def get_page_config(page_title_prefix="", layout="wide"):
     }
 
 
-def init_session(session_state, library: str = "errthang", reset: bool = False):
+def init_session(session_state, library: str = LIBRARY, reset: bool = False):
     """Site wide function to intialize session state variables if they don't exist."""
     # Running in dev mode implies using the local frogbase modules instead of the pip installed version
     # if DEV:
@@ -62,7 +64,7 @@ def init_session(session_state, library: str = "errthang", reset: bool = False):
     # Create a frogbase instance
     if "fb" not in session_state or reset:
         session_state.library = library
-        session_state.fb = FrogBase(datadir=DATADIR, library=library, verbose=VERBOSE, dev=DEV, persist=True)
+        session_state.fb = FrogBase(datadir=DATADIR, library=library, verbose=VERBOSE, dev=DEV, persist=PERSIST)
 
     # Set session state to toggle list & detail view
     if "listview" not in session_state or reset:

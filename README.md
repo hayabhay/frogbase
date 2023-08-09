@@ -73,10 +73,7 @@ This section is for software developers who want to use FrogBase as a python pac
       "https://www.youtube.com/@hayabhay"
    ]
 
-   fb.add(sources)\
-      .transcribe()\
-      .embed()\
-      .index()
+   fb.add(sources)
 
    fb.search("What is the name of the squeaky frog?")
    ```

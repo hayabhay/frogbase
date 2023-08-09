@@ -65,8 +65,7 @@ class Media(BaseModel):
         """Initialize a Media object.
 
         Args:
-            db: The database object for model i/o (tinyDB db)
-            logger: Loguru logger object
+            config: FrogBaseConfig object
             **data: The data to initialize the Media object with.
         """
         # Initialize the BaseModel

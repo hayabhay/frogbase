@@ -168,7 +168,13 @@ class ModelManager:
 
     def __repr__(self) -> str:
         """Returns a string representation of the ModelManager object."""
-        return f"<ModelManager: (transcriber={self._default_transcriber})>"
+        return (
+            "<ModelManager:\n"
+            f" <Transcriber: {getattr(self, self._default_transcriber).__repr__()}>\n"
+            f" <Embedder: {getattr(self, self._default_embedder).__repr__()}>\n"
+            f" <Indexer: {getattr(self, self._default_indexer).__repr__()}>\n"
+            ">"
+        )
 
     def __str__(self) -> str:
         """Returns a string representation of the ModelManager object."""

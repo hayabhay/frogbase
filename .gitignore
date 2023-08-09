@@ -1,7 +1,7 @@
 # Custom ignore
 local/
-data/
-frogverse/
+# Ignore all directories with the name "data"
+**/data/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
