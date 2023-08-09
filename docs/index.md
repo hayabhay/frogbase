@@ -15,12 +15,9 @@ sources = [
    "https://www.youtube.com/@hayabhay"
 ]
 
-fb.add(sources)\
-   .transcribe()\
-   .embed()\
-   .index()
+fb.add(sources)
 
-fb.search("What is the name of the squeaky frog?")
+fb.search("squeaky frog")
 ```
 
 [![PyPI](https://img.shields.io/pypi/v/frogbase.svg)][pypi_]

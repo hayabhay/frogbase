@@ -27,18 +27,6 @@ if st.session_state.listview:  # noqa: C901
     # Reset detail view session state
     st.session_state.selected_media_offset = 0
 
-    # Library selection widget
-    # --------------------------------
-    with st.sidebar.expander("📚 &nbsp; Libraries", expanded=False):
-        existing_libraries = [p.name for p in Path(DATADIR).iterdir() if p.is_dir()]
-        selected_library = st.selectbox(
-            "Select Library", options=existing_libraries, index=existing_libraries.index(st.session_state.library)
-        )
-        if selected_library != st.session_state.library:
-            # Update session state
-            init_session(st.session_state, library=selected_library, reset=True)
-            st.experimental_rerun()
-
     # Add Media widget
     # --------------------------------
     with st.sidebar.expander("➕ &nbsp; Add Media", expanded=False):
@@ -100,7 +88,7 @@ if st.session_state.listview:  # noqa: C901
             #     pass
 
             if sources:
-                fb.add(sources, **opts).transcribe(ignore_captioned=False).embed().index()
+                fb.add(sources, **opts)
                 st.success("Media downloading & processing in progress.")
 
             # Set list mode to true
@@ -307,16 +295,18 @@ if not st.session_state.listview:
             with tab:
                 with st.expander("📝 &nbsp; Caption Info", expanded=False):
                     st.json(caption_obj.model_dump())
-                
+
                 # Caption download link (VTT file)
                 caption_file_path = st.session_state.fb.config.libdir / caption_obj.loc
                 with open(caption_file_path) as f:
-                    st.download_button('Download WebVTT (VTT file)', f, file_name=f"{media_obj.title}.vtt")
+                    st.download_button("Download WebVTT (VTT file)", f, file_name=f"{media_obj.title}.vtt")
 
                 # Load the caption file
                 segments = caption_obj.load()
 
                 for segment in segments:
+                    if not segment["text"].strip():
+                        continue
                     # Create 2 columns
                     meta_col, text_col = st.columns([1, 6], gap="small")
 

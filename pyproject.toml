@@ -3,7 +3,7 @@
 # ==== Poetry ====
 [tool.poetry]
 name = "frogbase"
-version = "2.0.0a2"
+version = "2.0.0a3"
 description = "FrogBase simplifies the download-transcribe-embed-index workflow for multi-media content. It does so by linking content from various platforms with speech-to-text models, image & text encoders and embedding stores."
 homepage = "https://hayabhay.github.io/frogbase"
 repository = "https://github.com/hayabhay/frogbase"
@@ -12,10 +12,11 @@ authors = ["Abhay Kashyap"]
 readme = "README.md"
 license =  "MIT"
 classifiers=[
-    'Development Status :: 2 - Pre-Alpha',
+    'Development Status :: 3 - Alpha',
     'Intended Audience :: Developers',
     'License :: OSI Approved :: MIT License',
     'Natural Language :: English',
+    'Topic :: Software Development :: Libraries :: Python Modules',
     'Programming Language :: Python :: 3',
     'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
@@ -38,6 +39,7 @@ tinydb = "^4.8.0"
 humanize = "^4.6.0"
 webvtt-py = "^0.4.6"
 pydantic = "^2.0"
+torch = ">=2.0.0, !=2.0.1"
 openai-whisper = "^20230314"
 sentence-transformers = "^2.2.2"
 hnswlib = "^0.7.0"

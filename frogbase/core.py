@@ -2,6 +2,7 @@ import json
 import shutil
 import sys
 import tempfile
+from datetime import datetime
 from importlib.metadata import version
 from pathlib import Path
 from typing import Any
@@ -28,8 +29,8 @@ class FrogBase:
 
     def __init__(
         self,
-        datadir: str = "./frogverse",
-        library: str = "main",
+        datadir: str = "./data",
+        library: str = "frogverse",
         persist: bool = True,
         verbose: bool = False,
         dev: bool = False,
@@ -37,8 +38,8 @@ class FrogBase:
         """Initialize a 🐸 FrogBase instance.
 
         Args:
-            datadir: Houses all data for a FrogBase instance. Defaults to "./frogverse".
-            library: The name of the library to use. Defaults to "main".
+            datadir: Houses all data for a FrogBase instance. Defaults to "./data".
+            library: The name of the library to use. Defaults to "frogverse".
             persist: Whether to persist the data to disk. Defaults to True.
                 Warning: If set to False, all data is stored in a temporary directory
                 that is deleted when the instance is destroyed. Use this only if
@@ -108,7 +109,6 @@ class FrogBase:
         # In addition, a fair number of variables are set up in the library setter.
         self.library = self._default_library
 
-        self._media_buffer = []
         self._index = None
 
         # NOTE: Do not add any code after the library setter unless they're
@@ -194,7 +194,7 @@ class FrogBase:
             self._db.close()
             self._dbpath.unlink()
             self._db = None
-            
+
         if db_meta and db_meta["__version__"] < self._version:
             self._logger.info(f"Existing tinydb version: {db_meta['__version__']} is stale. Removing.")
             self._db.close()
@@ -205,7 +205,13 @@ class FrogBase:
         if not self._db:
             self._logger.info("TinyDB instance either doesn't exist or is stale. Creating a new one.")
             self._db = TinyDB(self._dbpath)
-            self._db.insert({"type": "meta", "__version__": self._version})
+            self._db.insert(
+                {
+                    "type": "meta",
+                    "__version__": self._version,
+                    "__created__": datetime.now().isoformat(),
+                }
+            )
 
             # Next, attempt to recover the media files
             self._logger.info("Attempting to recover media metadata.")
@@ -230,102 +236,64 @@ class FrogBase:
             self._db.table(Captions.__name__).insert_multiple(caption_dicts)
 
     # ------------------------ Primary Interface ----------------------------
-    def add(self, sources: str | list[str], **opts: dict[str, Any]) -> "FrogBase":
+    def add(
+        self,
+        sources: str | list[str],
+        ignore_captioned: bool = False,
+        keep_model_in_memory: bool = False,
+        **opts: dict[str, Any],
+    ):
         """Adds one or more media sources to the FrogBase library.
         These media sources can be urls or file/directory paths on disk.
 
         Args:
             sources: One or more media sources to add. Allowed sources are urls or filepaths on disk.
                Single source can be passed as a string instead of a list as a convenience.
+            ignore_captioned: If True, ignore media sources that already have captions.
+                Defaults to False.
+            keep_model_in_memory: If True, keep the model in memory after transcribing the media.
+                Defaults to False.
             **opts: Source type specific options. Check the source type specific methods for more info.
         """
         if not isinstance(sources, list):
             sources = [sources]
 
+        # Download the media sources and add them to the library.
         self._logger.info(f"Adding media {len(sources)} sources to library: {self._library}")
-        self._media_buffer = self.media.add(sources, **opts)
-        self._logger.info(f"Added {len(self._media_buffer)} new media to the library.")
+        media_objs = self.media.add(sources, **opts)
+        self._logger.info(f"Added {len(media_objs)} new media to the library.")
 
-        return self
-
-    def transcribe(
-        self,
-        media: None | Media | list[Media] = None,
-        transcriber: str | None = None,
-        model: str | None = None,
-        keep_model_in_memory: bool = False,
-        ignore_captioned: bool = False,
-        **params: Any,
-    ) -> "FrogBase":
-        """Transcribes the media sources added to the FrogBase instance."""
-        # If running without arguments, assume it is running in chain mode.
-        # If nothing is in the media buffer, use all media in the library.
-        for media_obj in self._media_buffer:
-            self._logger.info(f"Transcribing media: {media_obj.title}")
-
-        if not media:
-            if self._media_buffer:
-                self._logger.info(f"Transcribing {len(self._media_buffer)} media in the batch.")
-                media = self._media_buffer
-            else:
-                self._logger.info("Transcribing all the media in the library.")
-                media = self.media.all()
+        # Transcribe the media sources if requested.
+        # NOTE: For now, any updates to default is passed directly into opts
+        # TODO: Fix this later to be more explicit.
 
         if ignore_captioned:
-            media = [media_obj for media_obj in media if not media_obj.has_captions()]
-            self._logger.info(f"Ignoring captioned media. {len(media)} media remaining.")
+            to_transcribe = [media_obj for media_obj in media_objs if not media_obj.has_captions()]
+            self._logger.info(f"Ignoring captioned media. {len(to_transcribe)} media remaining.")
+        else:
+            to_transcribe = media_objs
 
-        self.models.transcribe(media, transcriber, model, keep_model_in_memory, **params)
+        if to_transcribe:
+            self.models.transcribe(
+                to_transcribe,
+                opts.get("transcriber_family"),
+                opts.get("transcriber_model"),
+                keep_model_in_memory,
+                **opts,
+            )
 
-        return self
+        # Next, vectorize all captions
+        self.models.embed(
+            media_objs,
+            opts.get("embedder_family"),
+            opts.get("embedder_model"),
+            keep_model_in_memory,
+            opts.get("overwrite", False),
+            **opts,
+        )
 
-    def embed(
-        self,
-        media: None | Media | list[Media] = None,
-        embedder: str | None = None,
-        model: str | None = None,
-        keep_model_in_memory: bool = False,
-        overwrite: bool = False,
-        **params: dict[str, Any],
-    ) -> "FrogBase":
-        """Embed one or more media with a specified vectorization engine and parameters."""
-        # If running without arguments, assume it is running in chain mode.
-        # If nothing is in the media buffer, use all media in the library.
-        if not media:
-            if self._media_buffer:
-                self._logger.info(f"Vectorizing {len(self._media_buffer)} media in the batch.")
-                media = self._media_buffer
-            else:
-                self._logger.info("Vectorizing all the media in the library.")
-                media = self.media.all()
-
-        self.models.embed(media, embedder, model, keep_model_in_memory, overwrite, **params)
-
-        return self
-
-    def index(
-        self,
-        # media: None | Media | list[Media] = None,
-        indexer: str | None = None,
-        embedding_source: str | None = None,
-        **params: dict[str, Any],
-    ) -> dict[str, Any]:
-        """Builds a search index from the embedded media."""
-        # TODO: Fix this
-        # # If running without arguments, assume it is running in chain mode.
-        # # If nothing is in the media buffer, use all media in the library.
-        # if not media:
-        #     if self._media_buffer:
-        #         self._logger.info(f"Building index for {len(self._media_buffer)} media in the batch.")
-        #         media = self._media_buffer
-        #     else:
-        #         self._logger.info("Building index for all the media in the library.")
-        #         media = self.media.all()
-
-        self._index = self.models.index(indexer, embedding_source, **params)
-        # self._index = self.models.index(media, indexer, embedding_source, **params)
-
-        return self._index
+        # Finally, index all the captions
+        self._index = self.models.index(opts.get("indexer"), opts.get("embedding_source"), **opts)
 
     # NOTE: This is currently a hacky function just for the Streamlit UI
     # TODO: This needs to be cleaned up
@@ -339,9 +307,8 @@ class FrogBase:
         # TODO: Fix this
         if not index:
             if not self._index:
-                index = self.index()
-            else:
-                index = self._index
+                self._index = self.models.index()
+            index = self._index
         if not index:
             raise ValueError("No index found. Please load an index first.")
 
@@ -373,4 +340,4 @@ class FrogBase:
             "https://www.tiktok.com/@hayabhay/video/7156262943372381486",
             "https://www.youtube.com/watch?v=HBxn56l9WcU",
         ]
-        self.add(sources, audio_only=False).transcribe(ignore_captioned=False).embed(overwrite=False).index()
+        self.add(sources, audio_only=False)

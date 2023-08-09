@@ -18,6 +18,7 @@ repos:
       - id: check-xml
       - id: check-toml
       - id: check-yaml
+        args: ['--unsafe']
       - id: detect-private-key
       - id: end-of-file-fixer
       - id: pretty-format-json
@@ -27,19 +28,19 @@ repos:
       - id: debug-statements
 
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.0.0-alpha.9-for-vscode
+    rev: v3.0.1
     hooks:
       - id: prettier
         args: ['--tab-width', '2', '--single-quote']
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.8.0
+    rev: v3.10.1
     hooks:
       - id: pyupgrade
         args: [--py311-plus]
 
   - repo: https://github.com/psf/black
-    rev: 23.3.0
+    rev: 23.7.0
     hooks:
       - id: black
         name: black
@@ -79,7 +80,7 @@ repos:
         minimum_pre_commit_version: '2.9.2'
 
   - repo: https://github.com/PyCQA/flake8
-    rev: 6.0.0
+    rev: 6.1.0
     hooks:
       - id: flake8
         name: flake8
